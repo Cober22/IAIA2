@@ -96,7 +96,7 @@ public class MapGenerator : MonoBehaviour {
         }
 
         RenderNonPathSprites(obstacles_NodesAvailable, n_Obstacles, "/Obstacles", 3);
-        
+
         RenderNonPathSprites(hootchs_NodesAvailable, n_Hootchs, "/Hootchs", 4);
     }
 
@@ -121,25 +121,27 @@ public class MapGenerator : MonoBehaviour {
         {
             int pos = new System.Random(seed).Next(0, elements.Count);
             Nodo element = elements[pos];
-            
-            while (elements.Count > 0 &&
-                 (limXLeft > element.position.x || element.position.x > limXRight) ||
-                 (limYUp < element.position.z || element.position.z < limYDown))
+
+            if  (elements.Count > 0 && 
+                (limXLeft > element.position.x || element.position.x > limXRight) ||
+                (limYUp < element.position.z || element.position.z < limYDown))
             {
                 pathfing_NodesAvailable.Add(elements[pos]);
                 elements.RemoveAt(pos);
 
-                if(elements.Count > 0)
+                if (elements.Count > 0)
                 {
                     pos = new System.Random(seed).Next(0, elements.Count);
                     element = elements[pos];
                 }
             }
 
-            DrawSprite(element, parentName, index);
-
-            i++;
-            elements.RemoveAt(pos);
+            if(elements.Count > 0)
+            {
+                DrawSprite(element, parentName, index);
+                elements.RemoveAt(pos);
+                i++;
+            }
         }
 
         if (elements.Count > 0)
