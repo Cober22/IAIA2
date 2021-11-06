@@ -27,22 +27,37 @@ public class MapGenerator : MonoBehaviour {
 	private int mapHeight;
 	private int n_Hootchs = 6;
 	private int n_Obstacles = 15;
-	private GameObject hootchs;
+    private int neutralPosElements = 0;
+    private float limXLeft;
+    private float limXRight;
+    private float limYUp;
+    private float limYDown;
+    private int i = 0;
+    private GameObject hootchs;
 	private GameObject obstacles;
     private GameObject environment;
 
     private Nodo[,] grid;
+    private GameObject tileObject;
 	private List<Nodo> hootchs_NodesAvailable = new List<Nodo>();
 	private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
 	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
-	
-	private void Awake()
+    private List<Nodo> hootchsNodes = new List<Nodo>();
+    private List<Nodo> obstaclesNodes = new List<Nodo>();
+
+    private void Awake()
     {
 		grid = GetComponent<Grid>().grid;
-		mapWidth = GetComponent<Grid>().gridSizeX;
+        tileObject = GetComponent<Grid>().tile;
+        mapWidth = GetComponent<Grid>().gridSizeX;
 		mapHeight = GetComponent<Grid>().gridSizeY;
 
-		hootchs = new GameObject();
+        limXLeft = -mapWidth / 2 + marginX;
+        limXRight = mapWidth / 2 - marginX;
+        limYUp = mapHeight / 2 - marginY;
+        limYDown = -mapHeight / 2 + marginY;
+
+    hootchs = new GameObject();
 		hootchs.name = "Hootchs";
 		
 		obstacles= new GameObject();
@@ -78,11 +93,11 @@ public class MapGenerator : MonoBehaviour {
                                 obstacles_NodesAvailable.Add(grid[x, y]);
                                 break;
                             case 2:
-                                DrawSprite(grid[x, y], "/Environment", 2);
+                                DrawSprite("/Environment", grid[x, y], 2);
                                 pathfing_NodesAvailable.Add(grid[x, y]);
                                 break;
                             case 1:
-                                DrawSprite(grid[x, y], "/Environment", 1);
+                                DrawSprite("/Environment", grid[x, y], 1);
                                 pathfing_NodesAvailable.Add(grid[x, y]);
                                 break;
                             default:
@@ -95,55 +110,46 @@ public class MapGenerator : MonoBehaviour {
             }
         }
 
-        RenderNonPathSprites(obstacles_NodesAvailable, n_Obstacles, "/Obstacles", 3);
+        RenderNonPathSprites(obstacles_NodesAvailable, obstaclesNodes, n_Obstacles, "/Obstacles", 3);
 
-        RenderNonPathSprites(hootchs_NodesAvailable, n_Hootchs, "/Hootchs", 4);
+        RenderNonPathSprites(hootchs_NodesAvailable, hootchsNodes, n_Hootchs, "/Hootchs", 4);
     }
 
-    /// <summary>
-    /// Método para dibujar los sprites que corresponden a los nodos que no pertenecen a los que podrán recorrerse
-    /// </summary>
-    /// <param name="i">Index para recorrer la lista de nodos del elemento a dibujar</param>
-    /// <param name="elements">Lista de cada uno de los nodos sobre los que se dibujará el elemento</param>
-    /// <param name="numElements">Número de elementos máximo que se van a dibujar</param>
-    /// <param name="parentName">Objecto que será padre de los elementos. Para tenerlos organizados en el inspector.</param>
-    /// <param name="index">Index del elemento que queremos dibujar, siendo el 1 el más alto</param>
-    /// <returns></returns>
-    private void RenderNonPathSprites(List<Nodo> elements, int numElements, string parentName, int index)
+    private void RenderNonPathSprites(List<Nodo> elements, List<Nodo> finalElements, int numElements, string parentName, int index)
     {
-        float limXLeft = -mapWidth / 2 + marginX;
-        float limXRight = mapWidth / 2 - marginX;
-        float limYUp = mapHeight/ 2 - marginY;
-        float limYDown = -mapHeight / 2 + marginY;
-
-        int i = 0;
-        while (i < elements.Count && i < numElements)
+        i = 0;
+        int pos;
+        Nodo element;
+        while (elements.Count > 0 && i < numElements)
         {
-            int pos = new System.Random(seed).Next(0, elements.Count);
-            Nodo element = elements[pos];
+            pos = Random.Range(0, elements.Count);
+            element = elements[pos];
 
-            if  (elements.Count > 0 && 
+            // Bucle para respetar margenes, se eliminan los nodos que no los cumplen
+            while (elements.Count > 0 &&
                 (limXLeft > element.position.x || element.position.x > limXRight) ||
                 (limYUp < element.position.z || element.position.z < limYDown))
             {
                 pathfing_NodesAvailable.Add(elements[pos]);
                 elements.RemoveAt(pos);
 
-                if (elements.Count > 0)
+                if (elements.Count > 1)
                 {
                     pos = new System.Random(seed).Next(0, elements.Count);
                     element = elements[pos];
                 }
             }
 
-            if(elements.Count > 0)
-            {
-                DrawSprite(element, parentName, index);
-                elements.RemoveAt(pos);
-                i++;
-            }
+            // Se recorrera la lista completa de elementos y se irán guardando
+            // uno por uno en la lista final que usaremos para dibujar
+            //DrawSprite(parentName, element, index);
+            //finalElements.Add(element);
+            //elements.RemoveAt(pos);
+
+            HomogenizeDistribution(elements, finalElements, element, parentName, pos, index);
         }
 
+        // Borramos nodos sobrantes y los añadimos a la lista que usaremos para el pathfinding
         if (elements.Count > 0)
         {
             int left = elements.Count - 1;
@@ -156,9 +162,32 @@ public class MapGenerator : MonoBehaviour {
         }
     }
 
-    private void DrawSprite(Nodo element, string parentName, int index)
+    private void HomogenizeDistribution(List<Nodo> elements, List<Nodo> finalElements, Nodo element, string parentName, int pos, int index)
     {
-        GameObject renderHolder = new GameObject();
+        float midX = grid[mapWidth/2, mapHeight/2].position.x;
+
+        int aux = neutralPosElements;
+        if (element.position.x < midX)
+            aux--;
+        else if(element.position.x > midX)
+            aux++;
+
+        if(aux == 1 || aux == 0 || aux == -1) 
+        {
+            DrawSprite(parentName, element, index);
+            finalElements.Add(element);
+            elements.RemoveAt(pos);
+            neutralPosElements = aux;
+            i++;
+        }
+    }
+
+    private void DrawSprite(string parentName, Nodo element, int index)
+    {
+        GameObject renderHolder = Instantiate(tileObject);
+
+        DestroyImmediate(renderHolder.GetComponent<SpriteRenderer>());
+        DestroyImmediate(renderHolder.GetComponent<RandomSprite>());
         SpriteRenderer renderSprite = renderHolder.AddComponent<SpriteRenderer>();
         renderHolder.transform.SetParent(GameObject.Find(parentName).transform);
         renderSprite.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -174,6 +203,8 @@ public class MapGenerator : MonoBehaviour {
         hootchs_NodesAvailable.Clear();
         obstacles_NodesAvailable.Clear();
         pathfing_NodesAvailable.Clear();
+        hootchsNodes.Clear();
+        obstaclesNodes.Clear();
 
         foreach (Transform child in hootchs.transform)
             Destroy(child.gameObject);
@@ -203,19 +234,20 @@ public class MapGenerator : MonoBehaviour {
         Gizmos.DrawWireCube(transform.position, new Vector3(mapWidth, 1, mapHeight));
         if (grid != null)
         {
-            foreach (Nodo nodo in hootchs_NodesAvailable)
+            foreach (Nodo nodo in hootchsNodes)
             {
-				Gizmos.color = Color.white;
+                Gizmos.color = Color.white;
                 Gizmos.DrawCube(nodo.position, Vector3.one * 1);
             }
 
-			foreach (Nodo nodo in obstacles_NodesAvailable)
-			{
-				Gizmos.color = Color.red;
-				Gizmos.DrawCube(nodo.position, Vector3.one * 1);
-			}
+            foreach (Nodo nodo in obstaclesNodes)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+            }
 
-			foreach (Nodo nodo in pathfing_NodesAvailable)
+
+            foreach (Nodo nodo in pathfing_NodesAvailable)
 			{
 				Gizmos.color = Color.cyan;
 				Gizmos.DrawCube(nodo.position, Vector3.one * 1);
