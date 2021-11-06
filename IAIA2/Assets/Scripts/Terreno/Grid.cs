@@ -15,6 +15,9 @@ public class Grid : MonoBehaviour
 
     void Awake()
     {
+        GameObject grid = new GameObject();
+        grid.name = "Grid";
+
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
@@ -37,15 +40,9 @@ public class Grid : MonoBehaviour
                 GameObject newTile = Instantiate(tile);
                 newTile.transform.SetParent(GameObject.Find("/Grid").transform);
                 newTile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                newTile.transform.position = new Vector3(x, 0f, y);
                 Nodo nodo = new Nodo(Wall, worldPoint, x, y, newTile);
                 grid[x, y] = nodo;
-
-                /* //-----------   CREACION DE GRID DE CUBOS   -----------//
-                Nodo nodo = new Nodo(Wall, worldPoint, x, y);
-                nodo.Cube.transform.SetParent(GameObject.Find("/Grid").transform);
-                grid[x, y] = nodo;
-                grid[x, y].Cube.transform.localScale = new Vector3(nodeDiameter, nodeDiameter, nodeDiameter);
-               */
             }
         }
     }

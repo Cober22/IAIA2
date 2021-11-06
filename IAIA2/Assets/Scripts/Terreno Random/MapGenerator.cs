@@ -14,91 +14,174 @@ public class MapGenerator : MonoBehaviour {
 	public int seed;
 	public Vector2 offset;
 
-	public bool autoUpdate;
+    [Range(0, 5)]
+    public int marginX;
+    [Range(0, 3)]
+    public int marginY;
+
+    public bool autoUpdate;
 
 	public TerrainType[] regions;
 
 	private int mapWidth;
 	private int mapHeight;
-	private int n_Hootchs = 5;
-	private int n_Obstacles = 10;
+	private int n_Hootchs = 6;
+	private int n_Obstacles = 15;
+	private GameObject hootchs;
+	private GameObject obstacles;
+    private GameObject environment;
 
-	private Nodo[,] grid;
-	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
-	private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
+    private Nodo[,] grid;
 	private List<Nodo> hootchs_NodesAvailable = new List<Nodo>();
-	private SpriteRenderer rendSprite;
+	private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
+	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
 	
 	private void Awake()
     {
 		grid = GetComponent<Grid>().grid;
 		mapWidth = GetComponent<Grid>().gridSizeX;
 		mapHeight = GetComponent<Grid>().gridSizeY;
-	}
 
-    public void GenerateMap() {
-		float[,] noiseMap = Noise.GenerateNoiseMap (mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offset);
-
-		for (int x = 0; x < mapWidth; x++) {
-			for (int y = 0; y < mapHeight; y++) {
-				float currentHeight = noiseMap[x, y];
-				for (int region = 0; region < regions.Length; region++) {
-					if (currentHeight <= regions[region].height) {
-
-						//-----------   CONFIGURACION CUBOS SEGUN ALGORITMO   -----------//
-						//grid[x, y].Cube.GetComponent<Renderer>().material.color = regions[region].colour;
-
-						grid[x, y].tile.transform.GetComponent<SpriteRenderer>().color = regions[region].colour;
-						//-----------   LISTA DE NODOS PARA CADA REGION   -----------//
-						switch (region)
-                        {
-                            case 5:
-                                hootchs_NodesAvailable.Add(grid[x, y]);
-								break;
-							case 4:
-								obstacles_NodesAvailable.Add(grid[x, y]);
-								break;
-							default:
-								pathfing_NodesAvailable.Add(grid[x, y]);
-								break;
-                        }
-						break;
-					}
-				}
-			}
-		}
-		System.Random randomPos = new System.Random(seed);
-
-		// Se colocan las camaasn
-		/*int i = 0;
-		while (i < hootchs_NodesAvailable.Count && i < n_Hootchs)
-        {
-			int pos = randomPos.Next(0, hootchs_NodesAvailable.Count);
-			//------- AQUI AÑADIR CABAÑA
-
-
-
-			//-------
-			pathfing_NodesAvailable.Add(hootchs_NodesAvailable[pos]);
-			hootchs_NodesAvailable.RemoveAt(pos);
-			i++;
-        }
-		i = 0;
+		hootchs = new GameObject();
+		hootchs.name = "Hootchs";
 		
-		while(i < obstacles_NodesAvailable.Count && i < n_Obstacles)
+		obstacles= new GameObject();
+		obstacles.name = "Obstacles";
+
+        environment = new GameObject();
+        environment.name = "Environment";
+    }
+
+    public void GenerateMap()
+    {
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offset);
+
+        RestoreMap();
+
+        for (int x = 0; x < mapWidth; x++)
         {
-			int pos = randomPos.Next(0, obstacles_NodesAvailable.Count);
-			//------- AQUI AÑADIR OBSTACULO
+            for (int y = 0; y < mapHeight; y++)
+            {
+                float currentHeight = noiseMap[x, y];
+                for (int region = 0; region < regions.Length; region++)
+                {
+                    if (currentHeight <= regions[region].height)
+                    {
+                        grid[x, y].tile.transform.GetComponent<SpriteRenderer>().color = regions[region].colour;
+                        //-----------   LISTA DE NODOS PARA CADA REGION   -----------//
+                        switch (region)
+                        {
+                            case 4:
+                                hootchs_NodesAvailable.Add(grid[x, y]);
+                                break;
+                            case 3:
+                                obstacles_NodesAvailable.Add(grid[x, y]);
+                                break;
+                            case 2:
+                                DrawSprite(grid[x, y], "/Environment", 2);
+                                pathfing_NodesAvailable.Add(grid[x, y]);
+                                break;
+                            case 1:
+                                DrawSprite(grid[x, y], "/Environment", 1);
+                                pathfing_NodesAvailable.Add(grid[x, y]);
+                                break;
+                            default:
+                                pathfing_NodesAvailable.Add(grid[x, y]);
+                                break;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
 
+        RenderNonPathSprites(obstacles_NodesAvailable, n_Obstacles, "/Obstacles", 3);
+        
+        RenderNonPathSprites(hootchs_NodesAvailable, n_Hootchs, "/Hootchs", 4);
+    }
 
-			//-------
-			pathfing_NodesAvailable.Add(hootchs_NodesAvailable[pos]);
-			hootchs_NodesAvailable.RemoveAt(pos);
-			i++;
-		}*/
-	}
+    /// <summary>
+    /// Método para dibujar los sprites que corresponden a los nodos que no pertenecen a los que podrán recorrerse
+    /// </summary>
+    /// <param name="i">Index para recorrer la lista de nodos del elemento a dibujar</param>
+    /// <param name="elements">Lista de cada uno de los nodos sobre los que se dibujará el elemento</param>
+    /// <param name="numElements">Número de elementos máximo que se van a dibujar</param>
+    /// <param name="parentName">Objecto que será padre de los elementos. Para tenerlos organizados en el inspector.</param>
+    /// <param name="index">Index del elemento que queremos dibujar, siendo el 1 el más alto</param>
+    /// <returns></returns>
+    private void RenderNonPathSprites(List<Nodo> elements, int numElements, string parentName, int index)
+    {
+        float limXLeft = -mapWidth / 2 + marginX;
+        float limXRight = mapWidth / 2 - marginX;
+        float limYUp = mapHeight/ 2 - marginY;
+        float limYDown = -mapHeight / 2 + marginY;
 
-	void OnValidate() {
+        int i = 0;
+        while (i < elements.Count && i < numElements)
+        {
+            int pos = new System.Random(seed).Next(0, elements.Count);
+            Nodo element = elements[pos];
+            
+            while (elements.Count > 0 &&
+                 (limXLeft > element.position.x || element.position.x > limXRight) ||
+                 (limYUp < element.position.z || element.position.z < limYDown))
+            {
+                pathfing_NodesAvailable.Add(elements[pos]);
+                elements.RemoveAt(pos);
+
+                if(elements.Count > 0)
+                {
+                    pos = new System.Random(seed).Next(0, elements.Count);
+                    element = elements[pos];
+                }
+            }
+
+            DrawSprite(element, parentName, index);
+
+            i++;
+            elements.RemoveAt(pos);
+        }
+
+        if (elements.Count > 0)
+        {
+            int left = elements.Count - 1;
+            while (left >= 0)
+            {
+                pathfing_NodesAvailable.Add(elements[left]);
+                elements.RemoveAt(left);
+                left--;
+            }
+        }
+    }
+
+    private void DrawSprite(Nodo element, string parentName, int index)
+    {
+        GameObject renderHolder = new GameObject();
+        SpriteRenderer renderSprite = renderHolder.AddComponent<SpriteRenderer>();
+        renderHolder.transform.SetParent(GameObject.Find(parentName).transform);
+        renderSprite.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+        renderSprite.sprite = regions[index].sprite;
+        renderSprite.transform.position = element.position;
+        renderSprite.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        renderSprite.transform.localScale = element.tile.transform.localScale;
+    }
+
+    private void RestoreMap()
+    {
+        hootchs_NodesAvailable.Clear();
+        obstacles_NodesAvailable.Clear();
+        pathfing_NodesAvailable.Clear();
+
+        foreach (Transform child in hootchs.transform)
+            Destroy(child.gameObject);
+        foreach (Transform child in obstacles.transform)
+            Destroy(child.gameObject);
+        foreach (Transform child in environment.transform)
+            Destroy(child.gameObject);
+    }
+
+    void OnValidate() {
 		if (mapWidth < 1) {
 			mapWidth = 1;
 		}
@@ -112,6 +195,31 @@ public class MapGenerator : MonoBehaviour {
 			octaves = 0;
 		}
 	}
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, new Vector3(mapWidth, 1, mapHeight));
+        if (grid != null)
+        {
+            foreach (Nodo nodo in hootchs_NodesAvailable)
+            {
+				Gizmos.color = Color.white;
+                Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+            }
+
+			foreach (Nodo nodo in obstacles_NodesAvailable)
+			{
+				Gizmos.color = Color.red;
+				Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+			}
+
+			foreach (Nodo nodo in pathfing_NodesAvailable)
+			{
+				Gizmos.color = Color.cyan;
+				Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+			}
+		}
+    }
 }
 
 [System.Serializable]
