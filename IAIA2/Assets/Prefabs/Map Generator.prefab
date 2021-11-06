@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3909275788668362427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3909275788668362424}
+  - component: {fileID: 3909275788668362425}
+  - component: {fileID: 3909275788668362426}
+  m_Layer: 0
+  m_Name: Map Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3909275788668362424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3909275788668362427}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3909275788668362425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3909275788668362427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 916b4f4143ed7456294aa19afa97bde8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  noiseScale: 1.02
+  octaves: 4
+  persistance: 0.54
+  lacunarity: 73.39
+  seed: 360
+  offset: {x: 5.1, y: 3}
+  marginX: 3
+  marginY: 2
+  autoUpdate: 1
+  regions:
+  - name: Water Deep
+    height: 0.3
+    colour: {r: 0.4722499, g: 0.8018868, b: 0.19290671, a: 1}
+    sprite: {fileID: 21300000, guid: 591295cd5f5d94941a03995981cb232c, type: 3}
+  - name: Water Shallow
+    height: 0.35
+    colour: {r: 0.47058827, g: 0.8000001, b: 0.19215688, a: 1}
+    sprite: {fileID: 21300000, guid: 6570d90aa64f9834fb4727c92ca0084e, type: 3}
+  - name: Sand
+    height: 0.4
+    colour: {r: 0.3372549, g: 0.59607846, b: 0.09019608, a: 1}
+    sprite: {fileID: 21300000, guid: 6570d90aa64f9834fb4727c92ca0084e, type: 3}
+  - name: Grass
+    height: 0.6
+    colour: {r: 0.5283019, g: 0.45863944, b: 0.4261303, a: 1}
+    sprite: {fileID: 21300000, guid: 227b0153543e44c4babc1389f4805781, type: 3}
+  - name: Snow
+    height: 1
+    colour: {r: 0.2924528, g: 0.19552833, b: 0.15312387, a: 1}
+    sprite: {fileID: -2598471196886283850, guid: f2d11a193d4eb744a9b6d1183fbebe88,
+      type: 3}
+--- !u!114 &3909275788668362426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3909275788668362427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba2eea436fb8bb54ea55397f3f93502c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 0
+  gridWorldSize: {x: 20, y: 15}
+  nodeRadius: 0.5
+  distance: 0
+  nodeDiameter: 1
+  gridSizeX: 0
+  gridSizeY: 0
+  tile: {fileID: 7677967910336022200, guid: d0745185e498645d1b87c30c3d4a70aa, type: 3}

@@ -82,7 +82,7 @@ public class MapGenerator : MonoBehaviour {
                 {
                     if (currentHeight <= regions[region].height)
                     {
-                        grid[x, y].tile.transform.GetComponent<SpriteRenderer>().color = regions[region].colour;
+                        //grid[x, y].tile.transform.GetComponent<SpriteRenderer>().color = regions[region].colour;
                         //-----------   LISTA DE NODOS PARA CADA REGION   -----------//
                         switch (region)
                         {
@@ -120,6 +120,9 @@ public class MapGenerator : MonoBehaviour {
         i = 0;
         int pos;
         Nodo element;
+
+        // Bucle para dibujar cada elemento en la posicion correcta.
+        // Se detendrá si el mapa no tiene el número de casillas sufientes del tipo de territorio necesario
         while (elements.Count > 0 && i < numElements)
         {
             pos = Random.Range(0, elements.Count);
@@ -142,10 +145,6 @@ public class MapGenerator : MonoBehaviour {
 
             // Se recorrera la lista completa de elementos y se irán guardando
             // uno por uno en la lista final que usaremos para dibujar
-            //DrawSprite(parentName, element, index);
-            //finalElements.Add(element);
-            //elements.RemoveAt(pos);
-
             HomogenizeDistribution(elements, finalElements, element, parentName, pos, index);
         }
 
@@ -172,6 +171,7 @@ public class MapGenerator : MonoBehaviour {
         else if(element.position.x > midX)
             aux++;
 
+        // Equilibrio entre los lados
         if(aux == 1 || aux == 0 || aux == -1) 
         {
             DrawSprite(parentName, element, index);
@@ -186,12 +186,16 @@ public class MapGenerator : MonoBehaviour {
     {
         GameObject renderHolder = Instantiate(tileObject);
 
+        // Se destruye el render de los tiles para poner el nuevo elemento correspondiente
         DestroyImmediate(renderHolder.GetComponent<SpriteRenderer>());
         DestroyImmediate(renderHolder.GetComponent<RandomSprite>());
+
+        // Se crea el objeto y se organiza en el inspector
         SpriteRenderer renderSprite = renderHolder.AddComponent<SpriteRenderer>();
         renderHolder.transform.SetParent(GameObject.Find(parentName).transform);
         renderSprite.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
+        // Se crea el nuevo sprite correspondiente
         renderSprite.sprite = regions[index].sprite;
         renderSprite.transform.position = element.position;
         renderSprite.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
