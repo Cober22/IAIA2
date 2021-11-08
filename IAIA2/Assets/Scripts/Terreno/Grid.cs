@@ -42,6 +42,7 @@ public class Grid : MonoBehaviour
                 newTile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
                 newTile.transform.position = new Vector3(x, 0f, y);
                 Nodo nodo = new Nodo(Wall, worldPoint, x, y, newTile);
+                nodo.tile = newTile;
                 grid[x, y] = nodo;
             }
         }

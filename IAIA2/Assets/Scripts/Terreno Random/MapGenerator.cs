@@ -42,8 +42,10 @@ public class MapGenerator : MonoBehaviour {
 	private List<Nodo> hootchs_NodesAvailable = new List<Nodo>();
 	private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
 	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
-    private List<Nodo> hootchsNodes = new List<Nodo>();
-    private List<Nodo> obstaclesNodes = new List<Nodo>();
+    [SerializeField]
+    public List<Nodo> hootchsNodes = new List<Nodo>();
+    [SerializeField]
+    public List<Nodo> obstaclesNodes = new List<Nodo>();
 
     private void Awake()
     {
@@ -159,6 +161,14 @@ public class MapGenerator : MonoBehaviour {
                 left--;
             }
         }
+
+        foreach (Nodo invalid in hootchsNodes)
+            if(pathfing_NodesAvailable.Count > 0)
+                pathfing_NodesAvailable.Remove(invalid);
+
+        foreach (Nodo invalid in obstaclesNodes)
+            if (pathfing_NodesAvailable.Count > 0)
+                pathfing_NodesAvailable.Remove(invalid);
     }
 
     private void HomogenizeDistribution(List<Nodo> elements, List<Nodo> finalElements, Nodo element, string parentName, int pos, int index)
@@ -176,9 +186,13 @@ public class MapGenerator : MonoBehaviour {
         {
             DrawSprite(parentName, element, index);
             finalElements.Add(element);
-            elements.RemoveAt(pos);
+            elements.Remove(element);
             neutralPosElements = aux;
             i++;
+        } else
+        {
+            pathfing_NodesAvailable.Add(element);
+            elements.Remove(element);
         }
     }
 
@@ -250,13 +264,12 @@ public class MapGenerator : MonoBehaviour {
                 Gizmos.DrawCube(nodo.position, Vector3.one * 1);
             }
 
-
             foreach (Nodo nodo in pathfing_NodesAvailable)
-			{
-				Gizmos.color = Color.cyan;
-				Gizmos.DrawCube(nodo.position, Vector3.one * 1);
-			}
-		}
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+            }
+        }
     }
 }
 
