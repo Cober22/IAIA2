@@ -12,7 +12,6 @@ public class GM : MonoBehaviour
 
     public Transform selectedUnitSquare;
 
-
     private Animator camAnim;
     public Image playerIcon; 
     public Sprite playerOneIcon;

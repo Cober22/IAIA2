@@ -21,38 +21,37 @@ public class MapGenerator : MonoBehaviour {
     [Range(1, 3)]
     public int marginHootchs;
 
-    public int cantidadGerreros = 1;
-    public GameObject guerreros;
-    public int cantidadTanques = 1;
-    public GameObject tanques;
-    public int cantidadVoladores = 1;
-    public GameObject voladores;
-    public GameObject castillo;
+    public GameObject castilloAliado;
+    public GameObject castilloEnemigo;
 
     public bool autoUpdate;
 
 	public TerrainType[] regions;
+    public UnitType[] unitsCollection;
 
-	private int mapWidth;
+    private int mapWidth;
 	private int mapHeight;
 	private int n_Hootchs = 6;
 	private int n_Obstacles = 15;
     private int neutralPosPosition = 1;
-    private float limXLeft;
-    private float limXRight;
-    private float limYUp;
-    private float limYDown;
+    private int limXLeft;
+    private int limXRight;
+    private int limYUp;
+    private int limYDown;
     private float midX;
     private int i = 0;
     private GameObject hootchs;
 	private GameObject obstacles;
     private GameObject environment;
+    private GameObject units;
 
     private Nodo[,] grid;
     private GameObject tileObject;
 	private List<Nodo> hootchs_NodesAvailable = new List<Nodo>();
-	private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
+    private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
 	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
+    private List<GameObject> unitsPlayer = new List<GameObject>();
+    private List<GameObject> unitsEnemy = new List<GameObject>();
     [SerializeField]
     public List<Nodo> hootchsNodes = new List<Nodo>();
     [SerializeField]
@@ -80,7 +79,40 @@ public class MapGenerator : MonoBehaviour {
         environment = new GameObject();
         environment.name = "Environment";
 
+        units = new GameObject();
+        units.name = "Units";
+
         GenerateMap();
+    }
+
+    private void CreateUnits(GameObject unit, GameObject castillo, List<GameObject> unitsList, Vector3 positionNewUnit)
+    {
+        if (positionNewUnit != castillo.transform.position)
+        {
+            bool correcPos = true;
+            foreach (GameObject unitInMap in unitsList)
+                if (unitInMap.transform.position == positionNewUnit)
+                {
+                    correcPos = false;
+                    break;
+                }
+            if (correcPos)
+                InstantiateUnits(unit, unitsList, positionNewUnit);
+        }
+    }
+
+    private void InstantiateUnits(GameObject unit, List<GameObject> unitsList, Vector3 newUnitPosition)
+    {
+        Debug.Log("Hola");
+        GameObject newUnit = Instantiate(unit);
+        newUnit.transform.position = newUnitPosition;
+        newUnit.transform.SetParent(GameObject.Find("/Units").transform);
+        SpriteRenderer[] newUnitsRenderer = newUnit.GetComponentsInChildren<SpriteRenderer>();
+
+        foreach (SpriteRenderer renderer in newUnitsRenderer)
+            renderer.sortingOrder = 1;
+
+        unitsList.Add(newUnit);
     }
 
     public void GenerateMap()
@@ -90,6 +122,43 @@ public class MapGenerator : MonoBehaviour {
 
         RestoreMap();
 
+        //-----------   CREACIÓN DE UNIDADES Y DE CASTILLO   -----------//
+        int posX = Random.Range(0, marginX);
+        int posY = Random.Range(0, mapHeight - marginY);
+        castilloAliado.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+
+        posX = mapWidth - 1 - posX;
+        posY = mapHeight - 1 - marginY - posY;
+        castilloEnemigo.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+
+        Vector3 positionNewUnit;
+
+        // Crear 'x' unidades de cada tipo para el enemigo y el jugador
+        foreach (UnitType unit in unitsCollection)
+        {
+            int auxCantidad = unit.cantidad;
+            while (auxCantidad > 0)
+            {
+                if (unit.aliado)
+                {
+                    posX = Random.Range(0, marginX);
+                    posY = Random.Range(0, mapHeight - marginY);
+                    positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+                    CreateUnits(unit.unit, castilloAliado, unitsPlayer, positionNewUnit);
+                    auxCantidad--;
+                }
+                else if (!unit.aliado)
+                {
+                    posX = Random.Range(mapWidth - marginX, mapWidth);
+                    posY = Random.Range(0, mapHeight - marginY);
+                    positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+                    CreateUnits(unit.unit, castilloEnemigo, unitsEnemy, positionNewUnit);
+                    auxCantidad--;
+                }
+            }
+        }
+
+        //-----------   CREACION ELEMENTOS DEL ENTORNO   -----------//
         for (int x = 0; x < mapWidth; x++)
         {
             for (int y = 0; y < mapHeight; y++)
@@ -260,7 +329,6 @@ public class MapGenerator : MonoBehaviour {
         {
             if (elements[c].position.x == element.position.x)
             {
-                Debug.Log("Eliminar posision");
                 pathfing_NodesAvailable.Add(elements[c]);
                 elements.Remove(elements[c]);
             }
@@ -298,6 +366,8 @@ public class MapGenerator : MonoBehaviour {
         pathfing_NodesAvailable.Clear();
         hootchsNodes.Clear();
         obstaclesNodes.Clear();
+        unitsPlayer.Clear();
+        unitsEnemy.Clear();
 
         foreach (Transform child in hootchs.transform)
             Destroy(child.gameObject);
@@ -305,9 +375,12 @@ public class MapGenerator : MonoBehaviour {
             Destroy(child.gameObject);
         foreach (Transform child in environment.transform)
             Destroy(child.gameObject);
+        foreach (Transform child in units.transform)
+            Destroy(child.gameObject);
 
         foreach (Nodo nodo in grid)
             nodo.IsWall = false;
+        
     }
 
     void OnValidate() {
@@ -357,4 +430,14 @@ public struct TerrainType {
 	public float height;
 	public Color colour;
 	public Sprite sprite;
+}
+
+[System.Serializable]
+public struct UnitType
+{
+    public string name;
+    [Range(1, 5)]
+    public int cantidad;
+    public bool aliado;
+    public GameObject unit;
 }
