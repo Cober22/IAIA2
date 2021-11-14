@@ -27,21 +27,17 @@ public class Grid : MonoBehaviour
     void CreateGrid()
     {
         grid = new Nodo[gridSizeX, gridSizeY];
-        Vector3 bottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
+        Vector3 bottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.up * gridWorldSize.y / 2;
         for(int x = 0; x < gridSizeX; x++) {
             for(int y = 0; y < gridSizeY; y++){
-                Vector3 worldPoint = bottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
-                bool Wall = true;
-
-                if (Physics.CheckSphere(worldPoint, nodeRadius, wallMask))
-                    Wall = false;
+                Vector3 worldPoint = bottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.up * (y * nodeDiameter + nodeRadius);
 
                 //-----------   CREACION DE GRID DE TILES   -----------//
                 GameObject newTile = Instantiate(tile);
                 newTile.transform.SetParent(GameObject.Find("/Grid").transform);
-                newTile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                //newTile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
                 newTile.transform.position = new Vector3(x, 0f, y);
-                Nodo nodo = new Nodo(Wall, worldPoint, x, y, newTile);
+                Nodo nodo = new Nodo(false, worldPoint, x, y, newTile);
                 nodo.tile = newTile;
                 grid[x, y] = nodo;
             }
@@ -89,23 +85,22 @@ public class Grid : MonoBehaviour
         return grid[x, y];
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-    //    if (grid != null)
-    //    {
-    //        foreach (Nodo nodo in grid)
-    //        {
-    //            if (nodo.IsWall)
-    //                Gizmos.color = Color.white;
-    //            else
-    //                Gizmos.color = Color.yellow;
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+        if (grid != null)
+        {
+            foreach (Nodo nodo in grid)
+            {
+                if (nodo.IsWall)
+                    Gizmos.color = Color.white;
+                else
+                    Gizmos.color = Color.cyan;
 
-    //            Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
-    //        }
-    //    }
-    //}
-
+                Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
+            }
+        }
+    }
 }
 
 //[System.Serializable]

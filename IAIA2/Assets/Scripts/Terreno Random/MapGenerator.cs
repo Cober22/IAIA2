@@ -14,10 +14,20 @@ public class MapGenerator : MonoBehaviour {
 	public int seed;
 	public Vector2 offset;
 
-    [Range(0, 5)]
+    [Range(2, 5)]
     public int marginX;
-    [Range(0, 3)]
+    [Range(1, 5)]
     public int marginY;
+    [Range(1, 3)]
+    public int marginHootchs;
+
+    public int cantidadGerreros = 1;
+    public GameObject guerreros;
+    public int cantidadTanques = 1;
+    public GameObject tanques;
+    public int cantidadVoladores = 1;
+    public GameObject voladores;
+    public GameObject castillo;
 
     public bool autoUpdate;
 
@@ -27,11 +37,12 @@ public class MapGenerator : MonoBehaviour {
 	private int mapHeight;
 	private int n_Hootchs = 6;
 	private int n_Obstacles = 15;
-    private int neutralPosElements = 0;
+    private int neutralPosPosition = 1;
     private float limXLeft;
     private float limXRight;
     private float limYUp;
     private float limYDown;
+    private float midX;
     private int i = 0;
     private GameObject hootchs;
 	private GameObject obstacles;
@@ -53,13 +64,14 @@ public class MapGenerator : MonoBehaviour {
         tileObject = GetComponent<Grid>().tile;
         mapWidth = GetComponent<Grid>().gridSizeX;
 		mapHeight = GetComponent<Grid>().gridSizeY;
+        midX = grid[mapWidth / 2, mapHeight / 2].position.x;
 
         limXLeft = -mapWidth / 2 + marginX;
         limXRight = mapWidth / 2 - marginX;
         limYUp = mapHeight / 2 - marginY;
         limYDown = -mapHeight / 2 + marginY;
 
-    hootchs = new GameObject();
+        hootchs = new GameObject();
 		hootchs.name = "Hootchs";
 		
 		obstacles= new GameObject();
@@ -67,10 +79,13 @@ public class MapGenerator : MonoBehaviour {
 
         environment = new GameObject();
         environment.name = "Environment";
+
+        GenerateMap();
     }
 
     public void GenerateMap()
     {
+        seed = Random.Range(0, 100000);
         float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offset);
 
         RestoreMap();
@@ -125,7 +140,7 @@ public class MapGenerator : MonoBehaviour {
 
         // Bucle para dibujar cada elemento en la posicion correcta.
         // Se detendrá si el mapa no tiene el número de casillas sufientes del tipo de territorio necesario
-        while (elements.Count > 0 && i < numElements)
+        while (elements.Count > numElements && i < numElements)
         {
             pos = Random.Range(0, elements.Count);
             element = elements[pos];
@@ -133,7 +148,7 @@ public class MapGenerator : MonoBehaviour {
             // Bucle para respetar margenes, se eliminan los nodos que no los cumplen
             while (elements.Count > 0 &&
                 (limXLeft > element.position.x || element.position.x > limXRight) ||
-                (limYUp < element.position.z || element.position.z < limYDown))
+                (limYUp < element.position.y || element.position.y < limYDown))
             {
                 pathfing_NodesAvailable.Add(elements[pos]);
                 elements.RemoveAt(pos);
@@ -147,7 +162,7 @@ public class MapGenerator : MonoBehaviour {
 
             // Se recorrera la lista completa de elementos y se irán guardando
             // uno por uno en la lista final que usaremos para dibujar
-            HomogenizeDistribution(elements, finalElements, element, parentName, pos, index);
+            HomogenizeDistribution(elements, finalElements, element, parentName, index);
         }
 
         // Borramos nodos sobrantes y los añadimos a la lista que usaremos para el pathfinding
@@ -171,28 +186,88 @@ public class MapGenerator : MonoBehaviour {
                 pathfing_NodesAvailable.Remove(invalid);
     }
 
-    private void HomogenizeDistribution(List<Nodo> elements, List<Nodo> finalElements, Nodo element, string parentName, int pos, int index)
+    private void HomogenizeDistribution(List<Nodo> elements, List<Nodo> finalElements, Nodo element, string parentName, int index)
     {
-        float midX = grid[mapWidth/2, mapHeight/2].position.x;
-
-        int aux = neutralPosElements;
-        if (element.position.x < midX)
-            aux--;
-        else if(element.position.x > midX)
-            aux++;
-
         // Equilibrio entre los lados
-        if(aux == 1 || aux == 0 || aux == -1) 
+   
+        // Parte derecha "jugador" del mapa
+        if (element.position.x < midX && neutralPosPosition != -1)
         {
-            DrawSprite(parentName, element, index);
-            finalElements.Add(element);
-            elements.Remove(element);
-            neutralPosElements = aux;
-            i++;
-        } else
+            if(parentName == "/Hootchs")
+            {
+                bool marginXHootch = true;
+                // Margen X entre cabañas
+                foreach (Nodo sprite in finalElements)
+                    if (Vector3.Distance(sprite.position, element.position) <= marginHootchs)
+                    {
+                        marginXHootch = false;
+                        break;
+                    }
+                if (marginXHootch)
+                {
+                    CreateFinalElement(elements, finalElements, element, parentName, index);
+                    NotXCoincidenteInHootches(elements, element);
+                }
+            }
+            else
+            {
+                CreateFinalElement(elements, finalElements, element, parentName, index);
+            }
+        }
+
+        // Parte izquierda "enemiga" del mapa
+        if (element.position.x > midX && neutralPosPosition != 1)
         {
-            pathfing_NodesAvailable.Add(element);
-            elements.Remove(element);
+            if (parentName == "/Hootchs")
+            {
+                bool marginXHootch = true;
+                // Margen X entre cabañas
+                foreach (Nodo sprite in finalElements)
+                    if (Vector3.Distance(sprite.position, element.position) <= marginHootchs)
+                    {
+                        marginXHootch = false;
+                        break;
+                    }
+                if (marginXHootch)
+                {
+                    CreateFinalElement(elements, finalElements, element, parentName, index);
+                    NotXCoincidenteInHootches(elements, element);
+                }
+            }
+            else
+            {
+                CreateFinalElement(elements, finalElements, element, parentName, index);
+            }
+        }
+    }
+
+    private void CreateFinalElement(List<Nodo> elements, List<Nodo> finalElements, Nodo element, string parentName, int index)
+    {
+        int posX = element.gridX;
+        int posY = element.gridY;
+        DrawSprite(parentName, element, index);
+        finalElements.Add(element);
+        elements.Remove(element);
+        grid[posX, posY].IsWall = true;
+        neutralPosPosition = neutralPosPosition == 1 ? -1 : 1;
+        i++;
+    }
+
+    private void NotXCoincidenteInHootches(List<Nodo> elements, Nodo element)
+    {
+        int c = 0;
+        while (c < elements.Count)
+        {
+            if (elements[c].position.x == element.position.x)
+            {
+                Debug.Log("Eliminar posision");
+                pathfing_NodesAvailable.Add(elements[c]);
+                elements.Remove(elements[c]);
+            }
+            else
+            {
+                c++;
+            }
         }
     }
 
@@ -211,8 +286,8 @@ public class MapGenerator : MonoBehaviour {
 
         // Se crea el nuevo sprite correspondiente
         renderSprite.sprite = regions[index].sprite;
-        renderSprite.transform.position = element.position;
-        renderSprite.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        renderSprite.transform.position = new Vector3(element.position.x, element.position.y, 0f);
+        //renderSprite.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
         renderSprite.transform.localScale = element.tile.transform.localScale;
     }
 
@@ -230,6 +305,9 @@ public class MapGenerator : MonoBehaviour {
             Destroy(child.gameObject);
         foreach (Transform child in environment.transform)
             Destroy(child.gameObject);
+
+        foreach (Nodo nodo in grid)
+            nodo.IsWall = false;
     }
 
     void OnValidate() {
@@ -247,30 +325,30 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, new Vector3(mapWidth, 1, mapHeight));
-        if (grid != null)
-        {
-            foreach (Nodo nodo in hootchsNodes)
-            {
-                Gizmos.color = Color.white;
-                Gizmos.DrawCube(nodo.position, Vector3.one * 1);
-            }
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawWireCube(transform.position, new Vector3(mapWidth, 1, mapHeight));
+    //    if (grid != null)
+    //    {
+    //        foreach (Nodo nodo in hootchsNodes)
+    //        {
+    //            Gizmos.color = Color.white;
+    //            Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+    //        }
 
-            foreach (Nodo nodo in obstaclesNodes)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawCube(nodo.position, Vector3.one * 1);
-            }
+    //        foreach (Nodo nodo in obstaclesNodes)
+    //        {
+    //            Gizmos.color = Color.red;
+    //            Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+    //        }
 
-            foreach (Nodo nodo in pathfing_NodesAvailable)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawCube(nodo.position, Vector3.one * 1);
-            }
-        }
-    }
+    //        foreach (Nodo nodo in pathfing_NodesAvailable)
+    //        {
+    //            Gizmos.color = Color.cyan;
+    //            Gizmos.DrawCube(nodo.position, Vector3.one * 1);
+    //        }
+    //    }
+    //}
 }
 
 [System.Serializable]
