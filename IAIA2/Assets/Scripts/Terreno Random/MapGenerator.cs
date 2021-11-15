@@ -125,11 +125,11 @@ public class MapGenerator : MonoBehaviour {
         //-----------   CREACIÓN DE UNIDADES Y DE CASTILLO   -----------//
         int posX = Random.Range(0, marginX);
         int posY = Random.Range(0, mapHeight - marginY);
-        castilloAliado.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+        castilloAliado.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
 
         posX = mapWidth - 1 - posX;
         posY = mapHeight - 1 - marginY - posY;
-        castilloEnemigo.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+        castilloEnemigo.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
 
         Vector3 positionNewUnit;
 
@@ -143,7 +143,7 @@ public class MapGenerator : MonoBehaviour {
                 {
                     posX = Random.Range(0, marginX);
                     posY = Random.Range(0, mapHeight - marginY);
-                    positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+                    positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloAliado, unitsPlayer, positionNewUnit);
                     auxCantidad--;
                 }
@@ -151,7 +151,7 @@ public class MapGenerator : MonoBehaviour {
                 {
                     posX = Random.Range(mapWidth - marginX, mapWidth);
                     posY = Random.Range(0, mapHeight - marginY);
-                    positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 0f);
+                    positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloEnemigo, unitsEnemy, positionNewUnit);
                     auxCantidad--;
                 }
@@ -346,6 +346,7 @@ public class MapGenerator : MonoBehaviour {
         // Se destruye el render de los tiles para poner el nuevo elemento correspondiente
         DestroyImmediate(renderHolder.GetComponent<SpriteRenderer>());
         DestroyImmediate(renderHolder.GetComponent<RandomSprite>());
+        DestroyImmediate(renderHolder.GetComponent<Tile>());
 
         // Se crea el objeto y se organiza en el inspector
         SpriteRenderer renderSprite = renderHolder.AddComponent<SpriteRenderer>();
@@ -355,7 +356,6 @@ public class MapGenerator : MonoBehaviour {
         // Se crea el nuevo sprite correspondiente
         renderSprite.sprite = regions[index].sprite;
         renderSprite.transform.position = new Vector3(element.position.x, element.position.y, 0f);
-        //renderSprite.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
         renderSprite.transform.localScale = element.tile.transform.localScale;
     }
 

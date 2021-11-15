@@ -63,8 +63,7 @@ public class Unit : MonoBehaviour
         ResetWeaponIcon();
 
         if (isSelected == true)
-        {
-            
+        {   
             isSelected = false;
             gm.selectedUnit = null;
             gm.ResetTiles();
