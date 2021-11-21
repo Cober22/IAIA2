@@ -115,6 +115,11 @@ public class MapGenerator : MonoBehaviour {
         unitsList.Add(newUnit);
     }
 
+    public void ActualicePositionUnits(UnitType unit, Vector2 pos)
+    {
+        unit.position = pos;
+    }
+
     public void GenerateMap()
     {
         seed = Random.Range(0, 100000);
@@ -145,6 +150,7 @@ public class MapGenerator : MonoBehaviour {
                     posY = Random.Range(0, mapHeight - marginY);
                     positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloAliado, unitsPlayer, positionNewUnit);
+                    ActualicePositionUnits(unit, new Vector2(posX, posY));
                     auxCantidad--;
                 }
                 else if (!unit.aliado)
@@ -439,5 +445,7 @@ public struct UnitType
     [Range(1, 5)]
     public int cantidad;
     public bool aliado;
+    public float influenceValue;
     public GameObject unit;
+    public Vector2 position;
 }

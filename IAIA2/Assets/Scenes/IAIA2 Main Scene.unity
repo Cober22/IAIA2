@@ -8810,7 +8810,7 @@ PrefabInstance:
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
       propertyPath: seed
-      value: 65966
+      value: 29407
       objectReference: {fileID: 0}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -9001,6 +9001,21 @@ PrefabInstance:
         type: 3}
       propertyPath: unitsCollection.Array.data[5].cantidad
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
+        type: 3}
+      propertyPath: unitsCollection.Array.data[0].influenceValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
+        type: 3}
+      propertyPath: unitsCollection.Array.data[1].influenceValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
+        type: 3}
+      propertyPath: unitsCollection.Array.data[2].influenceValue
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3909275788668362426, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
