@@ -63,7 +63,7 @@ public class MapGenerator : MonoBehaviour {
     [SerializeField]
     public List<Nodo> obstaclesNodes = new List<Nodo>();
 
-    private void Awake()
+    private void Start()
     {
 		grid = GetComponent<Grid>().grid;
         tileObject = GetComponent<Grid>().tile;
