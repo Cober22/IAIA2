@@ -12,10 +12,12 @@ public class Unit : MonoBehaviour
     public float moveSpeed;
 
     private GM gm;
+    private PathfindingAStar pathfinding;
 
     public int attackRadius;
     public bool hasAttacked;
     public List<Unit> enemiesInRange = new List<Unit>();
+    public List<Nodo> finalPath = new List<Nodo>();
 
     public int playerNumber;
 
@@ -47,6 +49,21 @@ public class Unit : MonoBehaviour
 		camAnim = Camera.main.GetComponent<Animator>();
         gm = FindObjectOfType<GM>();
         UpdateHealthDisplay();
+        pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
+        
+        if (transform.gameObject.layer == 9)
+        {
+            Nodo thisUnit;
+            foreach (Nodo unit in MapGenerator.nodeUnitsEnemy)
+            {
+                if (unit.position.x == transform.position.x && unit.position.y == transform.position.y)
+                {
+                    thisUnit = unit;
+                    pathfinding.Pathfinding(thisUnit, MapGenerator.nodoCastilloAliado, ref finalPath);
+                    break;
+                }
+            }
+        }
     }
 
     private void UpdateHealthDisplay ()
@@ -61,47 +78,49 @@ public class Unit : MonoBehaviour
     {
         
         ResetWeaponIcon();
-
-        if (isSelected == true)
-        {   
-            isSelected = false;
-            gm.selectedUnit = null;
-            gm.ResetTiles();
-
-        }
-        else {
-            if (playerNumber == gm.playerTurn) { // select unit only if it's his turn
-                if (gm.selectedUnit != null)
-                { // deselect the unit that is currently selected, so there's only one isSelected unit at a time
-                    gm.selectedUnit.isSelected = false;
-                }
+        if(gameObject.layer != 7)
+        {
+            if (isSelected == true)
+            {   
+                isSelected = false;
+                gm.selectedUnit = null;
                 gm.ResetTiles();
 
-                gm.selectedUnit = this;
+            }
+            else {
+                if (playerNumber == gm.playerTurn) { // select unit only if it's his turn
+                    if (gm.selectedUnit != null)
+                    { // deselect the unit that is currently selected, so there's only one isSelected unit at a time
+                        gm.selectedUnit.isSelected = false;
+                    }
+                    gm.ResetTiles();
 
-                isSelected = true;
-				if(source != null){
-					source.Play();
-				}
+                    gm.selectedUnit = this;
+
+                    isSelected = true;
+			        if(source != null){
+				        source.Play();
+			        }
 				
-                GetWalkableTiles();
-                GetEnemies();
+                    GetWalkableTiles();
+                    GetEnemies();
+                }
+
             }
 
-        }
 
 
-
-        Collider2D col = Physics2D.OverlapCircle(Camera.main.ScreenToWorldPoint(Input.mousePosition), 0.15f);
-        if (col != null)
-        {
-            Unit unit = col.GetComponent<Unit>(); // double check that what we clicked on is a unit
-            if (unit != null && gm.selectedUnit != null)
+            Collider2D col = Physics2D.OverlapCircle(Camera.main.ScreenToWorldPoint(Input.mousePosition), 0.15f);
+            if (col != null)
             {
-                if (gm.selectedUnit.enemiesInRange.Contains(unit) && !gm.selectedUnit.hasAttacked)
-                { // does the currently selected unit have in his list the enemy we just clicked on
-                    gm.selectedUnit.Attack(unit);
+                Unit unit = col.GetComponent<Unit>(); // double check that what we clicked on is a unit
+                if (unit != null && gm.selectedUnit != null)
+                {
+                    if (gm.selectedUnit.enemiesInRange.Contains(unit) && !gm.selectedUnit.hasAttacked)
+                    { // does the currently selected unit have in his list the enemy we just clicked on
+                        gm.selectedUnit.Attack(unit);
 
+                    }
                 }
             }
         }
@@ -126,7 +145,7 @@ public class Unit : MonoBehaviour
         foreach (Tile tile in tiles) {
             if (Mathf.Abs(transform.position.x - tile.transform.position.x) + Mathf.Abs(transform.position.y - tile.transform.position.y) <= tileSpeed)
             { // how far he can move
-                if (tile.isClear() == true)
+                if (tile.isClear() == true && tile.gameObject.layer != 9)
                 { // is the tile clear from any obstacles
                     tile.Highlight();
                 }
@@ -247,7 +266,6 @@ public class Unit : MonoBehaviour
 
     IEnumerator StartMovement(Transform movePos) { // Moves the character to his new position.
 
-
         while (transform.position.x != movePos.position.x) { // first aligns him with the new tile's x pos
             transform.position = Vector2.MoveTowards(transform.position, new Vector2(movePos.position.x, transform.position.y), moveSpeed * Time.deltaTime);
             yield return null;
@@ -264,7 +282,17 @@ public class Unit : MonoBehaviour
         gm.MoveInfoPanel(this);
     }
 
-
-
-
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(GameObject.FindObjectOfType<Grid>().transform.position, new Vector3(20, 15, 1));
+        Color color = Color.cyan;
+        if (finalPath.Count > 0)
+        {
+            foreach (Nodo nodo in finalPath)
+            {
+                Gizmos.color = color;
+                Gizmos.DrawCube(nodo.position, Vector3.one * 0.35f);
+            }
+        }
+    }
 }

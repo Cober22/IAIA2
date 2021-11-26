@@ -44,6 +44,40 @@ public class Grid : MonoBehaviour
         }
     }
 
+    //public List<Nodo> GetNeighbouringNodes(Nodo a_Node)
+    //{
+    //    List<Nodo> NeighbouringNodes = new List<Nodo>();
+    //    int xCheck;
+    //    int yCheck;
+
+    //    for (int x = -1; x <= 1; x++)
+    //    {
+    //        for (int y = -1; y <= 1; y++)
+    //        {
+    //            if (grid[x, y].IsWall)
+    //                continue;
+
+    //            else if (x == 0 && y == 0) //if we are on the node tha was passed in, skip this iteration.
+    //                continue;
+
+    //            else if (x == -1 && (y == -1 || y == 1) || x == 1 && (y == -1 || y == 1))
+    //                continue;
+
+    //            xCheck = a_Node.gridX + x;
+    //            yCheck = a_Node.gridY + y;
+
+    //            Debug.Log("Introduce vecino");
+    //            //Make sure the node is within the grid.
+    //            if (xCheck >= 0 && xCheck < gridSizeX && yCheck >= 0 && yCheck < gridSizeY)
+    //            {
+    //                NeighbouringNodes.Add(grid[xCheck, yCheck]); //Adds to the neighbours list.
+    //            }
+    //        }
+    //    }
+
+    //    return NeighbouringNodes;
+    //}
+
     public List<Nodo> GetNeighbouringNodes(Nodo a_Node)
     {
         List<Nodo> NeighbouringNodes = new List<Nodo>();
@@ -56,13 +90,15 @@ public class Grid : MonoBehaviour
             {
                 if (x == 0 && y == 0) //if we are on the node tha was passed in, skip this iteration.
                     continue;
+                else if (x == -1 && (y == -1 || y == 1) || x == 1 && (y == -1 || y == 1))
+                    continue;
 
                 xCheck = a_Node.gridX + x;
                 yCheck = a_Node.gridY + y;
 
                 //Make sure the node is within the grid.
                 if (xCheck >= 0 && xCheck < gridSizeX && yCheck >= 0 && yCheck < gridSizeY)
-                {   
+                {
                     NeighbouringNodes.Add(grid[xCheck, yCheck]); //Adds to the neighbours list.
                 }
             }
@@ -74,7 +110,7 @@ public class Grid : MonoBehaviour
     public Nodo NodeFromWorldPosition(Vector3 a_WorldPosition)
     {
         float xpoint = ((a_WorldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x);
-        float ypoint = ((a_WorldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y);
+        float ypoint = ((a_WorldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y);
 
         xpoint = Mathf.Clamp01(xpoint);
         ypoint = Mathf.Clamp01(ypoint);
@@ -85,22 +121,22 @@ public class Grid : MonoBehaviour
         return grid[x, y];
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-        if (grid != null)
-        {
-            foreach (Nodo nodo in grid)
-            {
-                if (nodo.IsWall)
-                    Gizmos.color = Color.white;
-                else
-                    Gizmos.color = Color.cyan;
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+    //    if (grid != null)
+    //    {
+    //        foreach (Nodo nodo in grid)
+    //        {
+    //            if (nodo.IsWall)
+    //                Gizmos.color = Color.white;
+    //            else
+    //                Gizmos.color = Color.cyan;
 
-                Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
-            }
-        }
-    }
+    //            Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
+    //        }
+    //    }
+    //}
 }
 
 //[System.Serializable]

@@ -8510,7 +8510,7 @@ PrefabInstance:
     - target: {fileID: 2536013330583250551, guid: 3a7f9032994daa748afb1fd85d4efb50,
         type: 3}
       propertyPath: m_Name
-      value: CastillloAliado
+      value: CastilloAliado
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a7f9032994daa748afb1fd85d4efb50, type: 3}
@@ -10925,6 +10925,7 @@ GameObject:
   - component: {fileID: 1518080666}
   - component: {fileID: 1518080664}
   - component: {fileID: 1518080663}
+  - component: {fileID: 1518080667}
   - component: {fileID: 1518080665}
   m_Layer: 0
   m_Name: GameMaster
@@ -11093,6 +11094,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1518080667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1518080662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4fb09e252b34774caf9c7e145d60c51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grid: {fileID: 1817466755}
 --- !u!1 &1527083049
 GameObject:
   m_ObjectHideFlags: 0
@@ -11892,6 +11906,18 @@ Transform:
   m_Father: {fileID: 462075486}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1817466755 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3909275788668362426, guid: d353bc3bf368eff4aad9a697c98e67a0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1033524484}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba2eea436fb8bb54ea55397f3f93502c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1843595640
 GameObject:
   m_ObjectHideFlags: 0

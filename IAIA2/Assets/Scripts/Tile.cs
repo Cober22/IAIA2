@@ -30,7 +30,7 @@ public class Tile : MonoBehaviour
 
     public bool isClear() // does this tile have an obstacle on it. Yes or No?
     {
-        Collider2D col = Physics2D.OverlapCircle(transform.position, 0.2f, obstacles);
+        Collider2D col = Physics2D.OverlapCircle(transform.position, 0.1f, obstacles);
         if (col == null)
         {
             return true;

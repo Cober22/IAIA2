@@ -23,6 +23,8 @@ public class MapGenerator : MonoBehaviour {
 
     public GameObject castilloAliado;
     public GameObject castilloEnemigo;
+    public static Nodo nodoCastilloAliado;
+    public static Nodo nodoCastilloEnemigo;
 
     public bool autoUpdate;
 
@@ -50,8 +52,12 @@ public class MapGenerator : MonoBehaviour {
 	private List<Nodo> hootchs_NodesAvailable = new List<Nodo>();
     private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
 	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
-    private List<GameObject> unitsPlayer = new List<GameObject>();
-    private List<GameObject> unitsEnemy = new List<GameObject>();
+
+    public List<GameObject> unitsPlayer = new List<GameObject>();
+    public List<GameObject> unitsEnemy = new List<GameObject>();
+    public static List<Nodo> nodeUnitsPlayer= new List<Nodo>();
+    public static List<Nodo> nodeUnitsEnemy = new List<Nodo>();
+
     [SerializeField]
     public List<Nodo> hootchsNodes = new List<Nodo>();
     [SerializeField]
@@ -103,7 +109,6 @@ public class MapGenerator : MonoBehaviour {
 
     private void InstantiateUnits(GameObject unit, List<GameObject> unitsList, Vector3 newUnitPosition)
     {
-        Debug.Log("Hola");
         GameObject newUnit = Instantiate(unit);
         newUnit.transform.position = newUnitPosition;
         newUnit.transform.SetParent(GameObject.Find("/Units").transform);
@@ -130,10 +135,12 @@ public class MapGenerator : MonoBehaviour {
         //-----------   CREACIÓN DE UNIDADES Y DE CASTILLO   -----------//
         int posX = Random.Range(0, marginX);
         int posY = Random.Range(0, mapHeight - marginY);
+        nodoCastilloAliado = grid[posX, posY];
         castilloAliado.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
 
         posX = mapWidth - 1 - posX;
         posY = mapHeight - 1 - marginY - posY;
+        nodoCastilloEnemigo = grid[posX, posY];
         castilloEnemigo.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
 
         Vector3 positionNewUnit;
@@ -148,6 +155,7 @@ public class MapGenerator : MonoBehaviour {
                 {
                     posX = Random.Range(0, marginX);
                     posY = Random.Range(0, mapHeight - marginY);
+                    nodeUnitsPlayer.Add(grid[posX, posY]);
                     positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloAliado, unitsPlayer, positionNewUnit);
                     ActualicePositionUnits(unit, new Vector2(posX, posY));
@@ -157,6 +165,7 @@ public class MapGenerator : MonoBehaviour {
                 {
                     posX = Random.Range(mapWidth - marginX, mapWidth);
                     posY = Random.Range(0, mapHeight - marginY);
+                    nodeUnitsEnemy.Add(grid[posX, posY]);
                     positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloEnemigo, unitsEnemy, positionNewUnit);
                     auxCantidad--;
@@ -321,6 +330,7 @@ public class MapGenerator : MonoBehaviour {
         int posX = element.gridX;
         int posY = element.gridY;
         DrawSprite(parentName, element, index);
+        element.tile.transform.gameObject.layer = 9;
         finalElements.Add(element);
         elements.Remove(element);
         grid[posX, posY].IsWall = true;
