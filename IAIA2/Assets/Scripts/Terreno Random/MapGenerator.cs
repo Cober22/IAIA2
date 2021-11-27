@@ -89,6 +89,13 @@ public class MapGenerator : MonoBehaviour {
         units.name = "Units";
 
         GenerateMap();
+
+        int totalUnits = 0;
+        foreach(UnitType unit in unitsCollection)
+            totalUnits += unit.cantidad;
+
+        while (hootchs.transform.childCount != totalUnits)
+            GenerateMap();
     }
 
     private void CreateUnits(GameObject unit, GameObject castillo, List<GameObject> unitsList, Vector3 positionNewUnit)

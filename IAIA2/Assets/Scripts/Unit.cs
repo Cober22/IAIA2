@@ -13,6 +13,8 @@ public class Unit : MonoBehaviour
 
     private GM gm;
     private PathfindingAStar pathfinding;
+    private bool pathfindingDoneThisTurn = false;
+    private Nodo targetNode;
 
     public int attackRadius;
     public bool hasAttacked;
@@ -50,7 +52,25 @@ public class Unit : MonoBehaviour
         gm = FindObjectOfType<GM>();
         UpdateHealthDisplay();
         pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
+    }
+
+    private void Update()
+    {
+        // PATHFINDING UNA VEZ POR TURNO
+        if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !pathfindingDoneThisTurn)
+            CallPathfinding();
         
+        if (GameObject.FindObjectOfType<GM>().playerTurn == 2 && pathfindingDoneThisTurn)
+            pathfindingDoneThisTurn = false;
+    }
+
+    public void CallPathfinding()
+    {
+        // OBJETIVO DEL PATHFINDING (CAMBIAR SEGÚN NOS INTERESE)
+        // Ojo que se actualiza y se manda un nodo, no vale con usar posiciones
+        // El script Grid tiene un método muy guapo para que dada una posicion devuelva
+        // un nodo del grid. No se usa porque algo falla, pero merece la pena arreglarlo.
+        targetNode = MapGenerator.nodoCastilloAliado;
         if (transform.gameObject.layer == 9)
         {
             Nodo thisUnit;
@@ -59,11 +79,12 @@ public class Unit : MonoBehaviour
                 if (unit.position.x == transform.position.x && unit.position.y == transform.position.y)
                 {
                     thisUnit = unit;
-                    pathfinding.Pathfinding(thisUnit, MapGenerator.nodoCastilloAliado, ref finalPath);
+                    pathfinding.Pathfinding(thisUnit, targetNode, ref finalPath);
                     break;
                 }
             }
         }
+        pathfindingDoneThisTurn = true;
     }
 
     private void UpdateHealthDisplay ()
@@ -76,7 +97,6 @@ public class Unit : MonoBehaviour
 
     private void OnMouseDown() // select character or deselect if already selected
     {
-        
         ResetWeaponIcon();
         if(gameObject.layer != 7)
         {
@@ -133,8 +153,6 @@ public class Unit : MonoBehaviour
             gm.UpdateInfoPanel(this);
         }
     }
-
-
 
     void GetWalkableTiles() { // Looks for the tiles the unit can walk on
         if (hasMoved == true) {
