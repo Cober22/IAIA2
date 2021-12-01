@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using static influenceMap;
 
 public class MapGenerator : MonoBehaviour {
 
@@ -63,6 +64,22 @@ public class MapGenerator : MonoBehaviour {
     [SerializeField]
     public List<Nodo> obstaclesNodes = new List<Nodo>();
 
+    [SerializeField]
+    float _decay = 0.3f;
+
+    [SerializeField]
+    float _momentum = 0.8f;
+
+    [SerializeField]
+    int _updateFrequency = 3;
+
+    InfluenceMap _influenceMap;
+
+    private void Awake()
+    {
+        _influenceMap = new InfluenceMap(mapWidth, mapHeight, _decay, _momentum);
+    }
+
     private void Start()
     {
 		grid = GetComponent<Grid>().grid;
@@ -96,6 +113,13 @@ public class MapGenerator : MonoBehaviour {
 
         while (hootchs.transform.childCount != totalUnits)
             GenerateMap();
+
+        InvokeRepeating("PropagationUpdate", 0.001f, 1.0f / _updateFrequency);
+    }
+
+    void PropagationUpdate()
+    {
+        _influenceMap.Propagate();
     }
 
     private void CreateUnits(GameObject unit, GameObject castillo, List<GameObject> unitsList, Vector3 positionNewUnit)
@@ -166,6 +190,7 @@ public class MapGenerator : MonoBehaviour {
                     positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloAliado, unitsPlayer, positionNewUnit);
                     ActualicePositionUnits(unit, new Vector2(posX, posY));
+                    _influenceMap.RegisterPropagator(unit);
                     auxCantidad--;
                 }
                 else if (!unit.aliado)

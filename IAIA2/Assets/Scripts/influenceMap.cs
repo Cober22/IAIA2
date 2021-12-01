@@ -187,5 +187,6 @@ public class influenceMap : MonoBehaviour
 
             return retVal.ToArray();
         }
+
     }
 }
