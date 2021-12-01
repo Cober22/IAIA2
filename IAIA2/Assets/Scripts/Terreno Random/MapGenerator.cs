@@ -75,11 +75,6 @@ public class MapGenerator : MonoBehaviour {
 
     InfluenceMap _influenceMap;
 
-    private void Awake()
-    {
-        _influenceMap = new InfluenceMap(mapWidth, mapHeight, _decay, _momentum);
-    }
-
     private void Start()
     {
 		grid = GetComponent<Grid>().grid;
@@ -105,6 +100,8 @@ public class MapGenerator : MonoBehaviour {
         units = new GameObject();
         units.name = "Units";
 
+        _influenceMap = new InfluenceMap(mapWidth, mapHeight, _decay, _momentum);
+
         GenerateMap();
 
         int totalUnits = 0;
@@ -120,6 +117,7 @@ public class MapGenerator : MonoBehaviour {
     void PropagationUpdate()
     {
         _influenceMap.Propagate();
+        _influenceMap.GetInfluences();
     }
 
     private void CreateUnits(GameObject unit, GameObject castillo, List<GameObject> unitsList, Vector3 positionNewUnit)
@@ -189,7 +187,7 @@ public class MapGenerator : MonoBehaviour {
                     nodeUnitsPlayer.Add(grid[posX, posY]);
                     positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloAliado, unitsPlayer, positionNewUnit);
-                    ActualicePositionUnits(unit, new Vector2(posX, posY));
+                    ActualicePositionUnits(unit, GetComponent<Grid>().Vec2FromWorldPosition(new Vector3 (unit.unit.transform.position.x, unit.unit.transform.position.x, 1f)));
                     _influenceMap.RegisterPropagator(unit);
                     auxCantidad--;
                 }

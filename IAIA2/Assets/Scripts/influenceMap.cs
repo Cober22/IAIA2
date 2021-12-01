@@ -36,8 +36,24 @@ public class influenceMap : MonoBehaviour
         float[,] _influencesBuffer;
         public float Decay { get; set; }
         public float Momentum { get; set; }
-        public int Width { get { return _influences.GetLength(0); } }
-        public int Height { get { return _influences.GetLength(1); } }
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        public void GetInfluences()
+        {
+            string matriz = "";
+            for (int i = 0; i < _influences.GetLength(0); i++)
+            {
+                for (int j = 0; j < _influences.GetLength(1); j++)
+                {
+                    matriz += _influences[i, j];
+                    matriz += ", ";
+                }
+
+                matriz += "\n";
+            }
+            Debug.Log(matriz);
+        }
 
         public float GetValue(int x, int y)
         {
@@ -50,6 +66,8 @@ public class influenceMap : MonoBehaviour
             _influencesBuffer = new float[width, height];
             Decay = decay;
             Momentum = momentum;
+            Width = width;
+            Height = height;
         }
 
         public void SetInfluence(int x, int y, float value)
@@ -86,9 +104,11 @@ public class influenceMap : MonoBehaviour
         {
             foreach (UnitType p in _propagators)
             {
-                SetInfluence(new Vector2I ((int)p.position.x, (int)p.position.y), p.influenceValue);
+                //Debug.Log("aa" + p.position);
+                SetInfluence(new Vector2I ((int)p.unit.transform.position.x, (int)p.unit.transform.position.x), p.influenceValue);
             }
         }
+
         void UpdatePropagation()
         {
             for (int xIdx = 0; xIdx < _influences.GetLength(0); ++xIdx)
@@ -102,7 +122,7 @@ public class influenceMap : MonoBehaviour
                     foreach (Vector2I n in neighbors)
                     {
                         //Debug.Log(n.x + " " + n.y);
-                        float inf = _influencesBuffer[n.x, n.y] * Mathf.Exp(-Decay * n.d) * Decay;
+                        float inf = _influencesBuffer[n.x, n.y] * Mathf.Exp(-Decay * n.d); //* Decay;
                         maxInf = Mathf.Max(inf, maxInf);
                         minInf = Mathf.Min(inf, minInf);
                     }
@@ -190,3 +210,4 @@ public class influenceMap : MonoBehaviour
 
     }
 }
+

@@ -109,16 +109,72 @@ public class Grid : MonoBehaviour
 
     public Nodo NodeFromWorldPosition(Vector3 a_WorldPosition)
     {
-        float xpoint = ((a_WorldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x);
-        float ypoint = ((a_WorldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y);
+        float xpoint;
+        if (a_WorldPosition.x < 0)
+        {
+            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) - Mathf.Abs(a_WorldPosition.x));
+        }
+        else
+        {
+            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) + a_WorldPosition.x);
+        }
 
-        xpoint = Mathf.Clamp01(xpoint);
-        ypoint = Mathf.Clamp01(ypoint);
+        float ypoint;
 
-        int x = Mathf.RoundToInt((gridSizeX - 1) * xpoint);
-        int y = Mathf.RoundToInt((gridSizeY - 1) * ypoint);
+        if (a_WorldPosition.y < 0)
+        {
+            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) - Mathf.Abs(a_WorldPosition.y));
+        }
+        else
+        {
+            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) + a_WorldPosition.y);
+        }
+
+        //xpoint = Mathf.Clamp01(xpoint);
+        //ypoint = Mathf.Clamp01(ypoint);
+
+        //int x = Mathf.RoundToInt((gridSizeX - 1) * xpoint);
+        //int y = Mathf.RoundToInt((gridSizeY - 1) * ypoint);
+
+        int x = Mathf.RoundToInt(xpoint);
+        int y = Mathf.RoundToInt(ypoint);
 
         return grid[x, y];
+    }
+
+    public Vector2 Vec2FromWorldPosition(Vector3 a_WorldPosition)
+    {
+        float xpoint;
+        if (a_WorldPosition.x < 0)
+        {
+            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) - Mathf.Abs(a_WorldPosition.x));
+        }
+        else
+        {
+            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) + a_WorldPosition.x);
+        }
+
+        float ypoint;
+
+        if (a_WorldPosition.y < 0)
+        {
+            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) - Mathf.Abs(a_WorldPosition.y));
+        }
+        else
+        {
+            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) + a_WorldPosition.y);
+        }
+
+        //xpoint = Mathf.Clamp01(xpoint);
+        //ypoint = Mathf.Clamp01(ypoint);
+
+        //int x = Mathf.RoundToInt((gridSizeX - 1) * xpoint);
+        //int y = Mathf.RoundToInt((gridSizeY - 1) * ypoint);
+
+        int x = Mathf.RoundToInt(xpoint);
+        int y = Mathf.RoundToInt(ypoint);
+
+        return new Vector2(x, y);
     }
 
     //private void OnDrawGizmos()
