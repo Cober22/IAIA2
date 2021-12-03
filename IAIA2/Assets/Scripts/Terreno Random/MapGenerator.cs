@@ -73,7 +73,8 @@ public class MapGenerator : MonoBehaviour {
     [SerializeField]
     int _updateFrequency = 3;
 
-    InfluenceMap _influenceMap;
+    [HideInInspector]
+    public InfluenceMap _influenceMap;
 
     private void Start()
     {
@@ -149,10 +150,10 @@ public class MapGenerator : MonoBehaviour {
         unitsList.Add(newUnit);
     }
 
-    public void ActualicePositionUnits(UnitType unit, Vector2 pos)
+    /*public void ActualicePositionUnits(UnitType unit, Vector2 pos)
     {
         unit.position = pos;
-    }
+    }*/
 
     public void GenerateMap()
     {
@@ -187,8 +188,6 @@ public class MapGenerator : MonoBehaviour {
                     nodeUnitsPlayer.Add(grid[posX, posY]);
                     positionNewUnit = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
                     CreateUnits(unit.unit, castilloAliado, unitsPlayer, positionNewUnit);
-                    ActualicePositionUnits(unit, GetComponent<Grid>().Vec2FromWorldPosition(new Vector3 (unit.unit.transform.position.x, unit.unit.transform.position.x, 1f)));
-                    _influenceMap.RegisterPropagator(unit);
                     auxCantidad--;
                 }
                 else if (!unit.aliado)
@@ -485,7 +484,7 @@ public struct UnitType
     [Range(1, 5)]
     public int cantidad;
     public bool aliado;
-    public float influenceValue;
+    //public float influenceValue;
     public GameObject unit;
-    public Vector2 position;
+    //public Vector2 position;
 }

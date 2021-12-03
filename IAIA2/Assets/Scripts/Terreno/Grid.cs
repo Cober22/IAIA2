@@ -171,8 +171,8 @@ public class Grid : MonoBehaviour
         //int x = Mathf.RoundToInt((gridSizeX - 1) * xpoint);
         //int y = Mathf.RoundToInt((gridSizeY - 1) * ypoint);
 
-        int x = Mathf.RoundToInt(xpoint);
-        int y = Mathf.RoundToInt(ypoint);
+        int x = Mathf.Abs(Mathf.RoundToInt(xpoint));
+        int y = Mathf.Abs(Mathf.RoundToInt(ypoint));
 
         return new Vector2(x, y);
     }

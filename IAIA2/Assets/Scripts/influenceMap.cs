@@ -30,7 +30,7 @@ public class influenceMap : MonoBehaviour
     public class InfluenceMap
     {
 
-        List<UnitType> _propagators = new List<UnitType>();
+        List<Unit> _propagators = new List<Unit>();
 
         float[,] _influences;
         float[,] _influencesBuffer;
@@ -88,7 +88,7 @@ public class influenceMap : MonoBehaviour
             }
         }
 
-        public void RegisterPropagator(UnitType p)
+        public void RegisterPropagator(Unit p)
         {
             _propagators.Add(p);
         }
@@ -102,10 +102,11 @@ public class influenceMap : MonoBehaviour
 
         void UpdatePropagators()
         {
-            foreach (UnitType p in _propagators)
+            foreach (Unit p in _propagators)
             {
-                //Debug.Log("aa" + p.position);
-                SetInfluence(new Vector2I ((int)p.unit.transform.position.x, (int)p.unit.transform.position.x), p.influenceValue);
+                //Debug.Log("x= " + (int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).x);
+                //Debug.Log("y= " + (int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).y);
+                SetInfluence((int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).x, (int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).y, p.influenceValue);
             }
         }
 

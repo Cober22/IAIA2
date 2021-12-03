@@ -43,7 +43,9 @@ public class Unit : MonoBehaviour
 
 	private AudioSource source;
 
-    public Text displayedText; 
+    public Text displayedText;
+
+    public float influenceValue;
 
     private void Start()
     {
@@ -52,6 +54,26 @@ public class Unit : MonoBehaviour
         gm = FindObjectOfType<GM>();
         UpdateHealthDisplay();
         pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
+
+    }
+
+    private void Awake()
+    {
+
+        if (this.name.Contains("Guerrero"))
+        {
+            influenceValue = 10f;
+        }
+        else if (this.name.Contains("Tanque"))
+        {
+            influenceValue = 10f;
+        }
+        else if (this.name.Contains("Volador"))
+        {
+            influenceValue = 10f;
+        }
+
+        GameObject.Find("Map Generator").GetComponent<MapGenerator>()._influenceMap.RegisterPropagator(this);
     }
 
     private void Update()
