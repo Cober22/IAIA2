@@ -8,7 +8,7 @@ public class GM : MonoBehaviour
 {
     public Unit selectedUnit;
 
-    public int playerTurn = 1;
+    public int playerTurn = 2;
 
     public Transform selectedUnitSquare;
 
@@ -61,7 +61,6 @@ public class GM : MonoBehaviour
         {
             selectedUnitSquare.gameObject.SetActive(false);
         }
-
     }
 
     // Sets panel active/inactive and moves it to the correct place

@@ -94,7 +94,8 @@ public class Tile : MonoBehaviour
             transform.localScale -= new Vector3(amount, amount, amount);
         }
 
-        if (isClear() == false && sizeIncrease == true) {
+        if (isClear() == false && sizeIncrease == true)
+        {
             sizeIncrease = false;
             transform.localScale -= new Vector3(amount, amount, amount);
         }

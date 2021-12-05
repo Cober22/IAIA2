@@ -47,6 +47,10 @@ public class Unit : MonoBehaviour
 
     public float influenceValue;
 
+    private int count = 1;
+    private int stepsTaken = 1;
+    private int maxSteps = 0;
+
     private void Start()
     {
 		source = GetComponent<AudioSource>();
@@ -63,14 +67,17 @@ public class Unit : MonoBehaviour
         if (this.name.Contains("Guerrero"))
         {
             influenceValue = 10f;
+            maxSteps = 4;
         }
         else if (this.name.Contains("Tanque"))
         {
             influenceValue = 10f;
+            maxSteps = 3;
         }
         else if (this.name.Contains("Volador"))
         {
             influenceValue = 10f;
+            maxSteps = 5;
         }
 
         GameObject.Find("Map Generator").GetComponent<MapGenerator>()._influenceMap.RegisterPropagator(this);
@@ -84,6 +91,9 @@ public class Unit : MonoBehaviour
         
         if (GameObject.FindObjectOfType<GM>().playerTurn == 2 && pathfindingDoneThisTurn)
             pathfindingDoneThisTurn = false;
+
+        if (!hasMoved && this.name == "GuerreroEnemigo(Clone)" && gm.playerTurn == 1)
+            MoveThroughNodes(finalPath);
     }
 
     public void CallPathfinding()
@@ -333,6 +343,51 @@ public class Unit : MonoBehaviour
                 Gizmos.color = color;
                 Gizmos.DrawCube(nodo.position, Vector3.one * 0.35f);
             }
+        }
+    }
+
+    //La version del John Limones
+    /*void MoveThroughNodes(List<Nodo> path)
+    {
+        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
+        float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
+
+        if (distanceToNextNode < 0.2f)
+            count++;
+        if (count >= (path.Count - 1))
+            count = 0;
+
+        // El NPC se girara para mirar siempre hacia su objetivo
+        //transform.LookAt(path[count].position);
+
+        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
+        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime);
+    }*/
+
+    private void MoveThroughNodes(List<Nodo> path)
+    {
+        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
+        float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
+
+        if (distanceToNextNode < 0.2f)
+        {
+            stepsTaken++;
+            count++;
+        }
+
+        if (count >= (path.Count - 1))
+            count = 0;
+
+        // El NPC se girara para mirar siempre hacia su objetivo
+        //transform.LookAt(path[count].position);
+
+        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
+        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime);
+
+        if (stepsTaken >= maxSteps)
+        {
+            hasMoved = true;
+            stepsTaken = 0;
         }
     }
 }

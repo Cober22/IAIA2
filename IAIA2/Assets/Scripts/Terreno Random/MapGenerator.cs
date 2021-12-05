@@ -118,7 +118,7 @@ public class MapGenerator : MonoBehaviour {
     void PropagationUpdate()
     {
         _influenceMap.Propagate();
-        _influenceMap.GetInfluences();
+        //_influenceMap.GetInfluences();
     }
 
     private void CreateUnits(GameObject unit, GameObject castillo, List<GameObject> unitsList, Vector3 positionNewUnit)
