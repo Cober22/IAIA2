@@ -54,13 +54,13 @@ public class MapGenerator : MonoBehaviour {
     private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
 	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
 
-    public List<GameObject> unitsPlayer = new List<GameObject>();
-    public List<GameObject> unitsEnemy = new List<GameObject>();
+    public static List<GameObject> unitsPlayer = new List<GameObject>();
+    public static List<GameObject> unitsEnemy = new List<GameObject>();
     public static List<Nodo> nodeUnitsPlayer= new List<Nodo>();
     public static List<Nodo> nodeUnitsEnemy = new List<Nodo>();
 
     [SerializeField]
-    public List<Nodo> hootchsNodes = new List<Nodo>();
+    public static List<Nodo> hootchsNodes = new List<Nodo>();
     [SerializeField]
     public List<Nodo> obstaclesNodes = new List<Nodo>();
 

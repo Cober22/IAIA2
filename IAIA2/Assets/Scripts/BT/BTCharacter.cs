@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BTCharacter
+public class BTCharacter : MonoBehaviour
 {   
-    //Ahora mismo es una FSM, se puede adaptar para el BT haciendo algunos cambios
+    //Ahora mismo es una FSM, se puede adaptar para el BT 
     
     Mode mode;
-    
+    GameObject enemyCloser;
+    GameObject hootchCloser;
+    Grid grid;
     public enum Percept
     {
         UnitMoneySupply, //Dinero >= 20 para alimentar a la unidad
@@ -17,6 +19,7 @@ public class BTCharacter
         EnemyClose, //Enemigo en rango
         WeakEnemy, //Enemigo a menos del 50% de vida
         VilleRangeToConquer, //Villa en rango cercano que se puede conquistar
+        Dead,
         None
     }
     public enum Mode
@@ -33,42 +36,30 @@ public class BTCharacter
     {
 
     }
-
-
-    /*public class Player
+    private void Awake()
     {
-        public Point Position { get; set; }
-        public string Name { get; set; }
-        public int Number { get; set; }
-        public int Speed { get; set; }
-        public double ShootingAccuracy { get; set; }
-        public bool BallPossession { get; set; }
-        public LinkedList<PathNode> Path;
-        private readonly Court _court;
-        private readonly Random _random;
-        public Player(Court court, Point basket)
-        {
-            ScoringBasket = new Point(basket.X, basket.Y);
-            _court = court;
-            Path = new LinkedList<PathNode>();
-            _random = new Random();
-        }
+        grid = GameObject.Find("Map Generator").GetComponent<Grid>();
     }
-    */
+
+
     private IEnumerable<Percept> GetPerceptsAnalysis()
     {
         //Analizar situacion, añadiendo en result todos los elementos que percibe el agente
         var result = new List<Percept>();
-        if (IsUnitMoneySupply())
+        if (!IsUnitMoneySupply())
+            result.Add(Percept.Dead);
+        else
+        {
             result.Add(Percept.UnitMoneySupply);
-        if (IsCastleUnderAttack())
-            result.Add(Percept.CastleUnderAttack);
-        if (IsEnemyClose())
-            result.Add(Percept.EnemyClose);
-        if (IsWeakEnemy())
-            result.Add(Percept.WeakEnemy);
-        if (IsVilleRangeToConquer())
-            result.Add(Percept.VilleRangeToConquer);
+            if (IsCastleUnderAttack())
+                result.Add(Percept.CastleUnderAttack);
+            if (IsEnemyClose())
+                result.Add(Percept.EnemyClose);
+            if (IsWeakEnemy())
+                result.Add(Percept.WeakEnemy);
+            if (IsVilleRangeToConquer())
+                result.Add(Percept.VilleRangeToConquer);
+        }
         return result;
     }
 
@@ -89,65 +80,99 @@ public class BTCharacter
     }
     private bool IsCastleUnderAttack()
     {
-        //Mapa de influencias?
-        return true;
+        //Si es un guerrero se mantiene en modo ataque, si no se pasa a defensa
+        List<Nodo> adyacenteCastillo = grid.GetNeighbouringNodes(MapGenerator.nodoCastilloEnemigo);
+
+        foreach (Nodo adyacente in adyacenteCastillo)
+            foreach(GameObject unidad in MapGenerator.unitsPlayer)
+                if (adyacente == grid.NodeFromWorldPosition(unidad.transform.position))
+                    return true;
+        return false;
     }
     private bool IsEnemyClose()
     {
-        //List<GameObject> unitsPlayer;
-        //Unit.GetEnemies()
-        return true;
+
+        Tile[] tiles = GetComponent<Unit>().GetTilesInRange();
+
+        foreach (Tile tile in tiles)
+            foreach (GameObject unit in MapGenerator.unitsPlayer)
+                if (unit.transform.position.x == tile.transform.position.x &&
+                    tile.transform.position.y == unit.transform.position.y)
+                {
+                    enemyCloser = unit;
+                    return true;
+                }
+        enemyCloser = null;
+        return false;
     }
+
     private bool IsWeakEnemy()
     {
         //Accede al enemigo que esta cerca y comprueba si tiene poca vida
-        return true;
+        return enemyCloser.GetComponent<Unit>().health < enemyCloser.GetComponent<Unit>().healthTotal / 2;
     }
+
     private bool IsVilleRangeToConquer()
     {
-        return true;
+        Tile[] tiles = GetComponent<Unit>().GetTilesInRange();
+
+        foreach (Tile tile in tiles)
+            foreach (Nodo hootch in MapGenerator.hootchsNodes)
+                if (hootch.position.x == tile.transform.position.x && tile.transform.position.y == hootch.position.y)
+                {
+                    GameObject[] allHootchs = GameObject.Find("Hootchs").GetComponentsInChildren<GameObject>();
+                    foreach (GameObject checkHootch in allHootchs)
+                        if (hootch.position.x == checkHootch.transform.position.x && checkHootch.transform.position.y == hootch.position.y)
+                            hootchCloser = checkHootch;
+                    return true;
+                }
+        hootchCloser = null;
+        return false;
     }
     #endregion
 
     public void Analysis()
     {
         var percepts = GetPerceptsAnalysis();
-        if (!percepts.Contains(Percept.UnitMoneySupply))
+        if (percepts.Contains(Percept.UnitMoneySupply))
         {
-            //Muere?
+            //Quita 20 monedas
         }
-        else if(percepts.Contains(Percept.CastleUnderAttack))
+        if (percepts.Contains(Percept.CastleUnderAttack))
         {
-            //Se pone a modo Defensa
+            //Va al castillo
             SetMode(Mode.Defensa);
-        }
-        else if(!percepts.Contains(Percept.EnemyClose))
-        {
-            //Modo anterior se mantiene
         }
         else if(percepts.Contains(Percept.EnemyClose))
         {
-            //Si es un guerrero ataca() (script UNIT), si no:
-            //else if (percepts.Contains(Percept.WeakEnemy)){ //Modo Defensa}
-            //else { Modo Ataque }
+            if (this.name.Contains("Guerrero"))
+                SetMode(Mode.Ataque);
+            else if (percepts.Contains(Percept.WeakEnemy))
+                SetMode(Mode.Ataque);
+            else
+                SetMode(Mode.Defensa);
 
+            //Si es un guerrero modo ataque
+            //else if (percepts.Contains(Percept.WeakEnemy)){ //Modo Ataque}
+            //else { Modo Defensa }
         }
     }
 
 
     public void Action()
     {
+        Analysis();
         var ActualMode = GetMode();
         var percepts = GetPerceptsAnalysis();
         if (ActualMode == Mode.Ataque)
         {
-            if (!percepts.Contains(Percept.EnemyClose))
+            if (percepts.Contains(Percept.EnemyClose))
             {
-
+                //Ir a la unidad enemiga con baja vida más cercana y atacar (mapa de infuencia) (variable closerenemy)
             }
             else if (percepts.Contains(Percept.VilleRangeToConquer))
             {
-
+                //Ir a villa en rango no conquistada (hootchCloser) y conquistarla
             }
             else //No hay villa ni enemigo cercano
             {
@@ -157,7 +182,9 @@ public class BTCharacter
         }
         else if (ActualMode == Mode.Defensa)
         {
-            //pathfinding hacia la base
+            Nodo posInicial = grid.NodeFromWorldPosition(this.transform.position);
+            Nodo posFinal = MapGenerator.nodoCastilloEnemigo;
+            GameObject.FindObjectOfType<PathfindingAStar>().Pathfinding(posInicial, posFinal, ref GetComponent<Unit>().finalPath);
         }
     }
 

@@ -27,6 +27,7 @@ public class Unit : MonoBehaviour
 
     // Attack Stats
     public int health;
+    public int healthTotal;
     public int attackDamage;
     public int defenseDamage;
     public int armor;
@@ -77,8 +78,10 @@ public class Unit : MonoBehaviour
         else if (this.name.Contains("Volador"))
         {
             influenceValue = 10f;
-            maxSteps = 5;
+            maxSteps = 5;   
         }
+
+        healthTotal = health;
 
         GameObject.Find("Map Generator").GetComponent<MapGenerator>()._influenceMap.RegisterPropagator(this);
     }
@@ -202,6 +205,23 @@ public class Unit : MonoBehaviour
 
             }          
         }
+    }
+
+    public Tile[] GetTilesInRange()
+    {
+        Tile[] tiles = FindObjectsOfType<Tile>();
+        foreach (Tile tile in tiles)
+        {
+            if (Mathf.Abs(transform.position.x - tile.transform.position.x) + Mathf.Abs(transform.position.y - tile.transform.position.y) <= tileSpeed)
+            { // how far he can move
+                if (tile.isClear() == true && tile.gameObject.layer != 9)
+                { // is the tile clear from any obstacles
+                    tile.Highlight();
+                }
+
+            }
+        }
+        return tiles;
     }
 
     void GetEnemies() {
