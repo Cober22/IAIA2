@@ -607,8 +607,9 @@ MonoBehaviour:
   enemiesInRange: []
   playerNumber: 2
   weaponIcon: {fileID: 2438361236584856755}
-  health: 5
-  attackDamage: 3
+  health: 4
+  healthTotal: 0
+  attackDamage: 8
   defenseDamage: 2
   armor: 1
   damageIcon: {fileID: -5891122600849735030, guid: eb780ffd3e6d6b64d993bc8583781d30,
@@ -618,6 +619,7 @@ MonoBehaviour:
     type: 3}
   isKing: 0
   displayedText: {fileID: 0}
+  influenceValue: 0
 --- !u!114 &1584046052
 MonoBehaviour:
   m_ObjectHideFlags: 0

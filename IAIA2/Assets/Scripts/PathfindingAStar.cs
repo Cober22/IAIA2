@@ -48,7 +48,7 @@ public class PathfindingAStar : MonoBehaviour
             {
                 if (NeighborNode.IsWall || ClosedList.Contains(NeighborNode))
                     continue;
-                int MoveCost = CurrentNode.gCost + GetDistance(CurrentNode, NeighborNode);
+                float MoveCost = CurrentNode.gCost + NeighborNode.influencia + GetDistance(CurrentNode, NeighborNode);
 
                 if (MoveCost < NeighborNode.gCost || !OpenList.Contains(NeighborNode))
                 {

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Village : MonoBehaviour
 {
-    public bool conqueredByPlayer;
-    public bool conqueredByIA;
+    public bool conqueredByPlayer = false;
+    public bool conqueredByIA = false;
     public int goldPerTurn;
     public int playerNumber;
     public int cost;

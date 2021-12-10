@@ -149,6 +149,16 @@ public class GM : MonoBehaviour
         GetGoldIncome(playerTurn);
         GetComponent<CharacterCreation>().CloseCharacterCreationMenus();
         createdUnit = null;
+
+        // Actualizar mapa de influencia y actualizar valor de influencia de los nodos
+        MapGenerator._influenceMap.Propagate();
+        float[,] influenceMap = MapGenerator._influenceMap.GetInfluences();
+
+        for (int x = 0; x < influenceMap.GetLength(0); x++)
+            for (int y = influenceMap.GetLength(1) - 1; y >= 0; y--)
+                GameObject.Find("Map Generator").GetComponent<Grid>().grid[x, influenceMap.GetLength(1) - 1 - y].influencia = influenceMap[x, y];
+
+        Nodo[,] grid = GameObject.Find("Map Generator").GetComponent<Grid>().grid;
     }
 
     void GetGoldIncome(int playerTurn) {

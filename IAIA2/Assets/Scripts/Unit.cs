@@ -64,10 +64,9 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
-
         if (this.name.Contains("Guerrero"))
         {
-            influenceValue = 10f;
+            influenceValue = 15f;
             maxSteps = 4;
         }
         else if (this.name.Contains("Tanque"))
@@ -77,49 +76,39 @@ public class Unit : MonoBehaviour
         }
         else if (this.name.Contains("Volador"))
         {
-            influenceValue = 10f;
+            influenceValue = 5f;
             maxSteps = 5;   
         }
 
         healthTotal = health;
 
-        GameObject.Find("Map Generator").GetComponent<MapGenerator>()._influenceMap.RegisterPropagator(this);
+        MapGenerator._influenceMap.RegisterPropagator(this);
     }
 
     private void Update()
     {
         // PATHFINDING UNA VEZ POR TURNO
-        if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !pathfindingDoneThisTurn)
-            CallPathfinding();
-        
-        if (GameObject.FindObjectOfType<GM>().playerTurn == 2 && pathfindingDoneThisTurn)
-            pathfindingDoneThisTurn = false;
-
-        if (!hasMoved && this.name == "GuerreroEnemigo(Clone)" && gm.playerTurn == 1)
-            MoveThroughNodes(finalPath);
-    }
-
-    public void CallPathfinding()
-    {
-        // OBJETIVO DEL PATHFINDING (CAMBIAR SEGÚN NOS INTERESE)
-        // Ojo que se actualiza y se manda un nodo, no vale con usar posiciones
-        // El script Grid tiene un método muy guapo para que dada una posicion devuelva
-        // un nodo del grid. No se usa porque algo falla, pero merece la pena arreglarlo.
-        targetNode = MapGenerator.nodoCastilloAliado;
-        if (transform.gameObject.layer == 9)
-        {
-            Nodo thisUnit;
-            foreach (Nodo unit in MapGenerator.nodeUnitsEnemy)
+        if (gameObject.layer == 7) {
+            if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !pathfindingDoneThisTurn)
             {
-                if (unit.position.x == transform.position.x && unit.position.y == transform.position.y)
-                {
-                    thisUnit = unit;
-                    pathfinding.Pathfinding(thisUnit, targetNode, ref finalPath);
-                    break;
-                }
-            }
+                
+                gameObject.GetComponent<BTCharacter>().Action();
+
+                if (stepsTaken >= maxSteps)
+                    GameObject.FindObjectOfType<GM>().playerTurn = 2;
+
+                if (finalPath.Count > 0 && stepsTaken < maxSteps) 
+                    MoveThroughNodes(finalPath);
+            } 
+            else if (GameObject.FindObjectOfType<GM>().playerTurn == 2 && pathfindingDoneThisTurn)
+                pathfindingDoneThisTurn = false;
+
         }
-        pathfindingDoneThisTurn = true;
+
+        if (GameObject.FindObjectOfType<GM>().playerTurn == 2)
+        {
+            stepsTaken = 0;
+        }
     }
 
     private void UpdateHealthDisplay ()
@@ -160,10 +149,7 @@ public class Unit : MonoBehaviour
                     GetWalkableTiles();
                     GetEnemies();
                 }
-
             }
-
-
 
             Collider2D col = Physics2D.OverlapCircle(Camera.main.ScreenToWorldPoint(Input.mousePosition), 0.15f);
             if (col != null)
@@ -202,26 +188,26 @@ public class Unit : MonoBehaviour
                 { // is the tile clear from any obstacles
                     tile.Highlight();
                 }
-
             }          
         }
     }
 
-    public Tile[] GetTilesInRange()
+    public List<Tile> GetTilesInRange()
     {
         Tile[] tiles = FindObjectsOfType<Tile>();
+        List<Tile> tilesInRange = new List<Tile>();
         foreach (Tile tile in tiles)
         {
             if (Mathf.Abs(transform.position.x - tile.transform.position.x) + Mathf.Abs(transform.position.y - tile.transform.position.y) <= tileSpeed)
             { // how far he can move
                 if (tile.isClear() == true && tile.gameObject.layer != 9)
                 { // is the tile clear from any obstacles
-                    tile.Highlight();
+                    //tile.Highlight();
+                    tilesInRange.Add(tile);
                 }
-
             }
         }
-        return tiles;
+        return tilesInRange;
     }
 
     void GetEnemies() {
@@ -322,8 +308,6 @@ public class Unit : MonoBehaviour
         }
 
         gm.UpdateInfoStats();
-  
-
     }
 
     public void ResetWeaponIcon() {
@@ -395,19 +379,13 @@ public class Unit : MonoBehaviour
             count++;
         }
 
-        if (count >= (path.Count - 1))
-            count = 0;
+        //if (count >= (path.Count - 1))
+            //count = 0;
 
         // El NPC se girara para mirar siempre hacia su objetivo
         //transform.LookAt(path[count].position);
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime);
-
-        if (stepsTaken >= maxSteps)
-        {
-            hasMoved = true;
-            stepsTaken = 0;
-        }
     }
 }

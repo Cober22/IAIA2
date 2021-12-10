@@ -12,6 +12,7 @@ public class Grid : MonoBehaviour
     public float nodeDiameter;
     public int gridSizeX, gridSizeY;
     public GameObject tile;
+    Vector3 test;
 
     void Awake()
     {
@@ -109,36 +110,13 @@ public class Grid : MonoBehaviour
 
     public Nodo NodeFromWorldPosition(Vector3 a_WorldPosition)
     {
-        float xpoint;
-        if (a_WorldPosition.x < 0)
-        {
-            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) - Mathf.Abs(a_WorldPosition.x));
-        }
-        else
-        {
-            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) + a_WorldPosition.x);
-        }
+        float percentX = (a_WorldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (a_WorldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
 
-        float ypoint;
-
-        if (a_WorldPosition.y < 0)
-        {
-            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) - Mathf.Abs(a_WorldPosition.y));
-        }
-        else
-        {
-            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) + a_WorldPosition.y);
-        }
-
-        //xpoint = Mathf.Clamp01(xpoint);
-        //ypoint = Mathf.Clamp01(ypoint);
-
-        //int x = Mathf.RoundToInt((gridSizeX - 1) * xpoint);
-        //int y = Mathf.RoundToInt((gridSizeY - 1) * ypoint);
-
-        int x = Mathf.RoundToInt(xpoint);
-        int y = Mathf.RoundToInt(ypoint);
-
+        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
         return grid[x, y];
     }
 
@@ -165,12 +143,6 @@ public class Grid : MonoBehaviour
             ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) + a_WorldPosition.y);
         }
 
-        //xpoint = Mathf.Clamp01(xpoint);
-        //ypoint = Mathf.Clamp01(ypoint);
-
-        //int x = Mathf.RoundToInt((gridSizeX - 1) * xpoint);
-        //int y = Mathf.RoundToInt((gridSizeY - 1) * ypoint);
-
         int x = Mathf.Abs(Mathf.RoundToInt(xpoint));
         int y = Mathf.Abs(Mathf.RoundToInt(ypoint));
 
@@ -187,9 +159,10 @@ public class Grid : MonoBehaviour
     //            if (nodo.IsWall)
     //                Gizmos.color = Color.white;
     //            else
-    //                Gizmos.color = Color.cyan;
-
-    //            Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
+    //                Gizmos.color = Color.black;
+               
+    //            //Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
+    //            Gizmos.DrawCube(test, Vector3.one * (nodeDiameter - distance));
     //        }
     //    }
     //}

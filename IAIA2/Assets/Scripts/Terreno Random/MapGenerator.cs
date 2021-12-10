@@ -5,7 +5,6 @@ using static influenceMap;
 
 public class MapGenerator : MonoBehaviour {
 
-
 	public float noiseScale;
 	public int octaves;
 	[Range(0,1)]
@@ -52,7 +51,7 @@ public class MapGenerator : MonoBehaviour {
     private GameObject tileObject;
 	private List<Nodo> hootchs_NodesAvailable = new List<Nodo>();
     private List<Nodo> obstacles_NodesAvailable = new List<Nodo>();
-	private List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
+	public List<Nodo> pathfing_NodesAvailable = new List<Nodo>();
 
     public static List<GameObject> unitsPlayer = new List<GameObject>();
     public static List<GameObject> unitsEnemy = new List<GameObject>();
@@ -74,7 +73,7 @@ public class MapGenerator : MonoBehaviour {
     int _updateFrequency = 3;
 
     [HideInInspector]
-    public InfluenceMap _influenceMap;
+    public static InfluenceMap _influenceMap;
 
     private void Start()
     {
@@ -109,16 +108,16 @@ public class MapGenerator : MonoBehaviour {
         foreach(UnitType unit in unitsCollection)
             totalUnits += unit.cantidad;
 
-        while (hootchs.transform.childCount != totalUnits)
+        while (units.transform.childCount != 6)
             GenerateMap();
 
-        InvokeRepeating("PropagationUpdate", 0.001f, 1.0f / _updateFrequency);
+        //InvokeRepeating("PropagationUpdate", 0.001f, 1.0f / _updateFrequency);
     }
 
     void PropagationUpdate()
     {
         _influenceMap.Propagate();
-        //_influenceMap.GetInfluences();
+        _influenceMap.GetInfluencesConsole();
     }
 
     private void CreateUnits(GameObject unit, GameObject castillo, List<GameObject> unitsList, Vector3 positionNewUnit)
@@ -386,22 +385,36 @@ public class MapGenerator : MonoBehaviour {
 
     private void DrawSprite(string parentName, Nodo element, int index)
     {
-        GameObject renderHolder = Instantiate(tileObject);
+        GameObject parent = GameObject.Find(parentName);
 
-        // Se destruye el render de los tiles para poner el nuevo elemento correspondiente
-        DestroyImmediate(renderHolder.GetComponent<SpriteRenderer>());
-        DestroyImmediate(renderHolder.GetComponent<RandomSprite>());
-        DestroyImmediate(renderHolder.GetComponent<Tile>());
+        if (regions[index].element != null)
+        {
+            GameObject newElement = Instantiate(regions[index].element, parent.transform);
+            newElement.transform.position = element.position;
+            newElement.transform.localScale = element.tile.transform.localScale;
+        } 
+        else
+        {
+            GameObject renderHolder = Instantiate(tileObject);
+            //Se destruye el render de los tiles para poner el nuevo elemento correspondiente
+            DestroyImmediate(renderHolder.GetComponent<SpriteRenderer>());
+            DestroyImmediate(renderHolder.GetComponent<RandomSprite>());
+            DestroyImmediate(renderHolder.GetComponent<Tile>());
 
-        // Se crea el objeto y se organiza en el inspector
-        SpriteRenderer renderSprite = renderHolder.AddComponent<SpriteRenderer>();
-        renderHolder.transform.SetParent(GameObject.Find(parentName).transform);
-        renderSprite.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            // Se crea el objeto y se organiza en el inspector
+            SpriteRenderer renderSprite = renderHolder.AddComponent<SpriteRenderer>();
+            renderHolder.transform.SetParent(GameObject.Find(parentName).transform);
+            renderSprite.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
-        // Se crea el nuevo sprite correspondiente
-        renderSprite.sprite = regions[index].sprite;
-        renderSprite.transform.position = new Vector3(element.position.x, element.position.y, 0f);
-        renderSprite.transform.localScale = element.tile.transform.localScale;
+            // Se crea el nuevo sprite correspondiente
+            renderSprite.sprite = regions[index].sprite;
+            renderSprite.transform.position = new Vector3(element.position.x, element.position.y, 0f);
+            renderSprite.transform.localScale = element.tile.transform.localScale;
+
+        }
+
+
+
     }
 
     private void RestoreMap()
@@ -475,6 +488,7 @@ public struct TerrainType {
 	public float height;
 	public Color colour;
 	public Sprite sprite;
+    public GameObject element;
 }
 
 [System.Serializable]

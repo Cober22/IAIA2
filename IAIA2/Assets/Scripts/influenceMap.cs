@@ -39,7 +39,7 @@ public class influenceMap : MonoBehaviour
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public void GetInfluences()
+        public void GetInfluencesConsole()
         {
             string matriz = "";
             for (int i = 0; i < _influences.GetLength(0); i++)
@@ -59,6 +59,12 @@ public class influenceMap : MonoBehaviour
         {
             return _influences[x, y];
         }
+
+        public float[,] GetInfluences()
+        {
+            return _influences;
+        }
+
 
         public InfluenceMap(int width, int height, float decay, float momentum)
         {
@@ -106,7 +112,7 @@ public class influenceMap : MonoBehaviour
             {
                 //Debug.Log("x= " + (int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).x);
                 //Debug.Log("y= " + (int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).y);
-                SetInfluence((int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).x, (int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.x, 1f)).y, p.influenceValue);
+                SetInfluence((int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.y, 1f)).x, (int)GameObject.Find("Map Generator").GetComponent<Grid>().Vec2FromWorldPosition(new Vector3(p.transform.position.x, p.transform.position.y, 1f)).y, p.influenceValue);
             }
         }
 

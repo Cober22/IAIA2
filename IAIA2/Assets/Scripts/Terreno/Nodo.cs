@@ -14,11 +14,12 @@ public class Nodo
 
     public bool visited;
     
-    public int gCost;
-    public int hCost;
+    public float gCost;
+    public float hCost;
+    public float influencia;
     public GameObject tile;
     
-    public int FCost { get { return gCost + hCost; } }
+    public float FCost { get { return gCost + hCost; } }
     
     public Nodo(bool is_Wall, Vector3 a_Pos, int a_gridX, int a_gridY, GameObject a_tile)
     {   
