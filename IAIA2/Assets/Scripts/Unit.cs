@@ -57,6 +57,8 @@ public class Unit : MonoBehaviour
 
     public bool actionDone;
 
+    [HideInInspector]
+    public Vector3 position;
 
     private void Awake()
     {
@@ -85,6 +87,8 @@ public class Unit : MonoBehaviour
         {
             maxSteps = tileSpeed;
         }
+
+        position = this.transform.position;
         
     }
 
@@ -124,6 +128,8 @@ public class Unit : MonoBehaviour
                         nodo.IsWall = true;
                     }
             }
+
+        position = this.transform.position;
     }
 
     private void UpdateHealthDisplay ()
@@ -396,7 +402,7 @@ public class Unit : MonoBehaviour
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime*8f);
 
         if (distanceToNextNode < 0.01f && count < finalPath.Count)
         {

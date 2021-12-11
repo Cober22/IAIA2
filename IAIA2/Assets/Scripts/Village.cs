@@ -6,8 +6,78 @@ public class Village : MonoBehaviour
 {
     public bool conqueredByPlayer = false;
     public bool conqueredByIA = false;
-    public int goldPerTurn;
+    public int goldPerTurn = 10;
     public int playerNumber;
-    public int cost;
-    
+    public int cost = 100;
+
+    private Grid grid;
+
+    private bool pulsado;
+
+    List<Nodo> vecinos;
+
+    private SpriteRenderer spriteRenderer;
+    public Sprite spriteEnemigo;
+    public Sprite spriteAliado;
+
+    public void Start()
+    {
+        pulsado = false;
+
+        grid = GameObject.Find("Map Generator").GetComponent<Grid>();
+
+        vecinos = grid.GetNeighbouringNodes(grid.NodeFromWorldPosition(this.transform.position));
+
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+    }
+
+    public void Update()
+    {
+        Unit[] units = FindObjectsOfType<Unit>();
+
+        foreach (Unit unit in units)
+        {
+            foreach (Nodo vecino in vecinos)
+            {
+                //Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
+                if (grid.NodeFromWorldPosition(unit.position) == vecino)
+                {
+                    if (unit.gameObject.name.Contains("Enemigo") && unit.gameObject.GetComponent<BTCharacter>().conquistarVilla)
+                    {
+                        conqueredByIA = true;
+                        conqueredByPlayer = false;
+                    }
+                    else if (pulsado)
+                    {
+                        if (unit.gameObject.layer != 7)
+                        {
+                            conqueredByIA = false;
+                            conqueredByPlayer = true;
+
+                        }
+                        pulsado = false;
+                    }
+                }
+            }
+
+        }
+
+        if (conqueredByPlayer)
+        {
+            spriteRenderer.sprite = spriteAliado;
+            playerNumber = 2;
+        }
+        else if (conqueredByIA)
+        {
+            spriteRenderer.sprite = spriteEnemigo;
+            playerNumber = 1;
+        }
+    }
+
+    private void OnMouseDown()
+    {
+        pulsado = true;
+        //Debug.Log("pulsado: " + pulsado);
+    }
+
 }

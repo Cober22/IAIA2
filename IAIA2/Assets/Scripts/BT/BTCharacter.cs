@@ -20,6 +20,8 @@ public class BTCharacter : MonoBehaviour
     List<Nodo> path;
     public bool actionInitialized = false; 
     float influenciaMin, abajo, derecha, arriba, izquierda;
+
+    public bool conquistarVilla;
     public enum Percept
     {
         UnitMoneySupply, //Dinero >= 20 para alimentar a la unidad
@@ -150,6 +152,7 @@ public class BTCharacter : MonoBehaviour
 
     public void Analysis()
     {
+        conquistarVilla = false;
         var percepts = GetPerceptsAnalysis();
         if (percepts.Contains(Percept.Dead))
         {
@@ -210,6 +213,7 @@ public class BTCharacter : MonoBehaviour
 
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
                 Debug.Log(path.Count);
+                conquistarVilla = true;
 
             }
             else //No hay villa ni enemigo cercano
