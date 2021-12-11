@@ -48,7 +48,7 @@ public class Unit : MonoBehaviour
 
     public float influenceValue;
 
-    private int count = 0;
+    public int count = 0;
     public int stepsTaken = 0;
     private int maxSteps;
 
@@ -112,8 +112,11 @@ public class Unit : MonoBehaviour
                 if (finalPath != null && finalPath.Count > 0)
                     MoveThroughNodes(finalPath);    
 
-                if (stepsTaken >= maxSteps)
-                    actionDone = true;
+                if(finalPath != null && finalPath.Count > 0)
+                {
+                    if (stepsTaken >= maxSteps || transform.position == finalPath[finalPath.Count-1].position)
+                        actionDone = true;
+                }
             }
     }
 

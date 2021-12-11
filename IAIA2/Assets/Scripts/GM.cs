@@ -193,6 +193,8 @@ public class GM : MonoBehaviour
                 unit.GetComponent<Unit>().actionDone = false;
                 unit.GetComponent<Unit>().pathfindingDoneThisTurn = false;
                 unit.GetComponent<Unit>().stepsTaken = 0;
+                unit.GetComponent<Unit>().count = 0;
+                unit.GetComponent<Unit>().finalPath = null;
                 unit.GetComponent<BTCharacter>().actionInitialized = false;
                 unitElement = 0;
             }
