@@ -8810,7 +8810,7 @@ PrefabInstance:
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
       propertyPath: seed
-      value: 65670
+      value: 8572
       objectReference: {fileID: 0}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -8893,15 +8893,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
+      propertyPath: regions.Array.data[1].sprite
+      value: 
+      objectReference: {fileID: 8083079555343073661, guid: b394b35a7204a814ba84e09f9b93a034,
+        type: 3}
+    - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
+        type: 3}
+      propertyPath: regions.Array.data[2].sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 88cc5302f4cc7de48af01282124c5a16,
+        type: 3}
+    - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
+        type: 3}
+      propertyPath: regions.Array.data[3].sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 09cbef20df6f1784b8b9663cb8d182d2,
+        type: 3}
+    - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
+        type: 3}
+      propertyPath: regions.Array.data[4].sprite
+      value: 
+      objectReference: {fileID: 4704049881594486357, guid: e8617c4535b792048978a8abd067560c,
+        type: 3}
+    - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
+        type: 3}
       propertyPath: regions.Array.data[3].element
       value: 
-      objectReference: {fileID: 7767452286446655037, guid: da3435065a89e2442b5138b621f7826c,
+      objectReference: {fileID: 7513162515480412742, guid: 4324c493a3ae7c84c98cbf6d7da6a400,
         type: 3}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
       propertyPath: regions.Array.data[4].element
       value: 
-      objectReference: {fileID: 4688297137751264698, guid: 76ee34c1b9be29f4ebb1071fbfe8504a,
+      objectReference: {fileID: 3077946163484560645, guid: 2184d5346892ff94dbaaaf9f7fee9ed6,
         type: 3}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -10939,6 +10963,7 @@ GameObject:
   - component: {fileID: 1518080663}
   - component: {fileID: 1518080667}
   - component: {fileID: 1518080665}
+  - component: {fileID: 1518080668}
   m_Layer: 0
   m_Name: GameMaster
   m_TagString: Untagged
@@ -10958,6 +10983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3138fdd8b71249f1b731de9c22d60a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grid: {fileID: 1817466755}
   player1openButton: {fileID: 1711346562}
   player2openButton: {fileID: 367636552}
   player1Menu: {fileID: 1803040348}
@@ -10974,6 +11000,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e12d55c9fd510429f8dac7d91313c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EM: {fileID: 1518080668}
   selectedUnit: {fileID: 0}
   playerTurn: 1
   selectedUnitSquare: {fileID: 1321401653}
@@ -10988,8 +11015,8 @@ MonoBehaviour:
   attackDamageInfo: {fileID: 134779321}
   armorInfo: {fileID: 1346136015}
   defenseDamageInfo: {fileID: 1527083051}
-  player1Gold: 0
-  player2Gold: 0
+  player1Gold: 40
+  player2Gold: 40
   player1GoldText: {fileID: 495775305}
   player2GoldText: {fileID: 993916837}
   createdUnit: {fileID: 0}
@@ -11120,6 +11147,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 1817466755}
+--- !u!114 &1518080668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1518080662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7cec0fd3d369a419adc479a5de8571, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gm: {fileID: 1518080664}
 --- !u!1 &1527083049
 GameObject:
   m_ObjectHideFlags: 0

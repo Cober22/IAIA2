@@ -8,6 +8,11 @@ public class CharacterCreation : MonoBehaviour
 
     GM gm;
 
+    //para tomar las posiciones donde aparecen los dos castillos
+    //public MapGenerator mapGenerator;
+    //para acceder a los métodos de comprobar nodos
+    public Grid grid;
+
     public Button player1openButton;
     public Button player2openButton;
 
@@ -61,6 +66,16 @@ public class CharacterCreation : MonoBehaviour
         gm.UpdateGoldText();
         gm.createdUnit = unit;
 
+        //turno aliado entonces a la lista de unidades aliadas
+        if (gm.playerTurn == 2)
+        {
+            MapGenerator.unitsPlayer.Add(unit.gameObject);
+        }
+        else
+        {
+            MapGenerator.unitsEnemy.Add(unit.gameObject);
+        }
+
         DeselectUnit();
         SetCreatableTiles();
     }
@@ -93,12 +108,22 @@ public class CharacterCreation : MonoBehaviour
     void SetCreatableTiles() {
         gm.ResetTiles();
 
-        Tile[] tiles = FindObjectsOfType<Tile>();
-        foreach (Tile tile in tiles)
+        List<Nodo> vecinos;
+
+        if (gm.playerTurn == 2)
         {
-            if (tile.isClear())
+            vecinos = grid.GetAllNeighbouringNodes(MapGenerator.nodoCastilloAliado);
+        }
+        else
+        {
+            vecinos = grid.GetAllNeighbouringNodes(MapGenerator.nodoCastilloEnemigo);
+        }
+
+        foreach (Nodo nodo in vecinos)
+        {
+            if (nodo.tile.GetComponent<Tile>().isClear())
             {
-                tile.SetCreatable();
+                nodo.tile.GetComponent<Tile>().SetCreatable();
             }
         }
     }

@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class GM : MonoBehaviour
 {
+    public EconomyManager EM;
+
     public Unit selectedUnit;
 
     public int playerTurn = 2;
@@ -67,13 +69,22 @@ public class GM : MonoBehaviour
 
         //Debug.Log("Turn: " + playerTurn + " Unit: " + unitElement + " Total: " + numUnits);
         if(playerTurn == 1 && unitElement >= numUnits)
-            EndTurn();
+        {
+
+            EndTurn(); 
+            player2Gold -= EM.FeedUnits(MapGenerator.unitsPlayer, player2Gold); 
+            UpdateGoldText();
+        }
 
         IAActions();
 
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown("b"))
+        if (Input.GetKeyDown(KeyCode.Space) /*|| Input.GetKeyDown("b")*/)
             if (playerTurn == 2)
+            {
                 EndTurn();
+                player1Gold -= EM.FeedUnits(MapGenerator.unitsEnemy, player1Gold);
+                UpdateGoldText();
+            }
 
         if (selectedUnit != null) // moves the white square to the selected unit!
         {

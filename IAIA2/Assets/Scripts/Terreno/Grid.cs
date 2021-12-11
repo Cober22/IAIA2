@@ -108,6 +108,33 @@ public class Grid : MonoBehaviour
         return NeighbouringNodes;
     }
 
+    public List<Nodo> GetAllNeighbouringNodes(Nodo a_Node)
+    {
+        List<Nodo> NeighbouringNodes = new List<Nodo>();
+        int xCheck;
+        int yCheck;
+
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0) //if we are on the node tha was passed in, skip this iteration.
+                    continue;
+
+                xCheck = a_Node.gridX + x;
+                yCheck = a_Node.gridY + y;
+
+                //Make sure the node is within the grid.
+                if (xCheck >= 0 && xCheck < gridSizeX && yCheck >= 0 && yCheck < gridSizeY)
+                {
+                    NeighbouringNodes.Add(grid[xCheck, yCheck]); //Adds to the neighbours list.
+                }
+            }
+        }
+
+        return NeighbouringNodes;
+    }
+
     public Nodo NodeFromWorldPosition(Vector3 a_WorldPosition)
     {
         float percentX = (a_WorldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;

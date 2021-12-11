@@ -511,6 +511,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6588128a3cedcd4bba4d2da7381e929, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitType: 
+  feedingCost: 2
   isSelected: 0
   hasMoved: 0
   tileSpeed: 3

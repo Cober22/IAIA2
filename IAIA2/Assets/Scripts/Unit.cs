@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Unit : MonoBehaviour
 {
+    public string unitType;
+    public int feedingCost;
+
     public bool isSelected;
     public bool hasMoved;
 

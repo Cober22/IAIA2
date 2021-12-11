@@ -484,16 +484,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6588128a3cedcd4bba4d2da7381e929, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitType: 
+  feedingCost: 4
   isSelected: 0
   hasMoved: 0
   tileSpeed: 4
   moveSpeed: 10
+  pathfindingDoneThisTurn: 0
   attackRadius: 1
   hasAttacked: 0
   enemiesInRange: []
   playerNumber: 2
   weaponIcon: {fileID: 3831706680235958397}
   health: 7
+  healthTotal: 0
   attackDamage: 4
   defenseDamage: 3
   armor: 2
@@ -504,6 +508,10 @@ MonoBehaviour:
     type: 3}
   isKing: 0
   displayedText: {fileID: 0}
+  influenceValue: 0
+  count: 0
+  stepsTaken: 0
+  actionDone: 0
 --- !u!61 &3831706681586816674
 BoxCollider2D:
   m_ObjectHideFlags: 0
