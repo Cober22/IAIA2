@@ -13,7 +13,7 @@ public class Unit : MonoBehaviour
 
     private GM gm;
     private PathfindingAStar pathfinding;
-    private bool pathfindingDoneThisTurn = false;
+    public bool pathfindingDoneThisTurn = false;
     private Nodo targetNode;
 
     public int attackRadius;
@@ -48,19 +48,12 @@ public class Unit : MonoBehaviour
 
     public float influenceValue;
 
-    private int count = 1;
-    private int stepsTaken = 1;
-    private int maxSteps = 0;
+    private int count = 0;
+    public int stepsTaken = 0;
+    private int maxSteps;
 
-    private void Start()
-    {
-		source = GetComponent<AudioSource>();
-		camAnim = Camera.main.GetComponent<Animator>();
-        gm = FindObjectOfType<GM>();
-        UpdateHealthDisplay();
-        pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
+    public bool actionDone;
 
-    }
 
     private void Awake()
     {
@@ -89,6 +82,17 @@ public class Unit : MonoBehaviour
         
     }
 
+    private void Start()
+    {
+		source = GetComponent<AudioSource>();
+		camAnim = Camera.main.GetComponent<Animator>();
+        gm = FindObjectOfType<GM>();
+        UpdateHealthDisplay();
+        pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
+        actionDone = false;
+        //maxSteps = tileSpeed;
+
+    }
     public void RebootPropagators()
     {
         if (this.name.Contains("Aliado"))
@@ -99,28 +103,18 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
-        // PATHFINDING UNA VEZ POR TURNO
-        if (gameObject.layer == 7) {
-            if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !pathfindingDoneThisTurn)
+        // PROVISIONAL
+        maxSteps = tileSpeed;
+        // UNA ACCION POR TURNO
+        if (gameObject.layer == 7)
+            if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !actionDone)
             {
-                
-                gameObject.GetComponent<BTCharacter>().Action();
+                if (finalPath != null && finalPath.Count > 0)
+                    MoveThroughNodes(finalPath);    
 
                 if (stepsTaken >= maxSteps)
-                    GameObject.FindObjectOfType<GM>().playerTurn = 2;
-
-                if (finalPath.Count > 0 && stepsTaken < maxSteps) 
-                    MoveThroughNodes(finalPath);
-            } 
-            else if (GameObject.FindObjectOfType<GM>().playerTurn == 2 && pathfindingDoneThisTurn)
-                pathfindingDoneThisTurn = false;
-
-        }
-
-        if (GameObject.FindObjectOfType<GM>().playerTurn == 2)
-        {
-            stepsTaken = 0;
-        }
+                    actionDone = true;
+            }
     }
 
     private void UpdateHealthDisplay ()
@@ -351,12 +345,19 @@ public class Unit : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(GameObject.FindObjectOfType<Grid>().transform.position, new Vector3(20, 15, 1));
-        Color color = Color.cyan;
-        if (finalPath.Count > 0)
+        Color color = Color.white;
+        if (finalPath != null && finalPath.Count > 0)
         {
+            if(this.name.Contains("Guerrero"))
+                color = Color.red;
+            else if (this.name.Contains("Tanque"))
+                color = Color.magenta;
+            else if (this.name.Contains("Volador"))
+                color = Color.blue;
+
+            Gizmos.color = color;
             foreach (Nodo nodo in finalPath)
             {
-                Gizmos.color = color;
                 Gizmos.DrawCube(nodo.position, Vector3.one * 0.35f);
             }
         }
@@ -391,8 +392,8 @@ public class Unit : MonoBehaviour
             count++;
         }
 
-        //if (count >= (path.Count - 1))
-            //count = 0;
+        if (count >= (path.Count - 1))
+            finalPath = null;
 
         // El NPC se girara para mirar siempre hacia su objetivo
         //transform.LookAt(path[count].position);

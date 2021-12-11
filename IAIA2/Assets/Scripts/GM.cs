@@ -34,23 +34,46 @@ public class GM : MonoBehaviour
     public Unit createdUnit;
     public Village createdVillage;
 
+    public List<GameObject> unitsIAonScene;
+
     public GameObject blueVictory;
     public GameObject darkVictory;
 
 	private AudioSource source;
 
+    private int unitElement;
+    int numUnits;
+
     private void Start()
     {
-		source = GetComponent<AudioSource>();
+        unitElement = 0;
+        source = GetComponent<AudioSource>();
         camAnim = Camera.main.GetComponent<Animator>();
         GetGoldIncome(1);
+
+        numUnits = GameObject.Find("/Units").transform.childCount;
+
+        for (int i = 0; i < numUnits; i++)
+        {
+            GameObject unitToAdd = GameObject.Find("/Units").transform.GetChild(i).gameObject;
+            if (unitToAdd.layer == 7)
+                unitsIAonScene.Add(unitToAdd);
+        }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown("b")) {
+        //numUnits = GameObject.Find("/Units").transform.childCount;
+
+        Debug.Log("Turn: " + playerTurn + " Unit: " + unitElement + " Total: " + numUnits);
+        if(playerTurn == 1 && unitElement >= numUnits)
             EndTurn();
-        }
+
+        IAActions();
+
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown("b"))
+            if (playerTurn == 2)
+                EndTurn();
 
         if (selectedUnit != null) // moves the white square to the selected unit!
         {
@@ -60,6 +83,27 @@ public class GM : MonoBehaviour
         else
         {
             selectedUnitSquare.gameObject.SetActive(false);
+        }
+    }
+
+    public void IAActions()
+    {
+        if (playerTurn == 1 && unitElement < numUnits)
+        {
+            // UNA ACCION UNO POR UNO
+            GameObject unit = GameObject.Find("/Units").transform.GetChild(unitElement).gameObject;
+            if (unit.layer == 7)
+            {
+                if (!unit.GetComponent<BTCharacter>().actionInitialized)
+                {
+                    unit.GetComponent<BTCharacter>().Action();
+                    unit.GetComponent<BTCharacter>().actionInitialized = true;
+                }
+                else if (unit.GetComponent<Unit>().actionDone)
+                    unitElement++;
+            } 
+            else if (unit.layer != 7)
+                unitElement++;
         }
     }
 
@@ -143,6 +187,15 @@ public class GM : MonoBehaviour
             playerTurn = 2;
         } else if (playerTurn == 2) {
             playerIcon.sprite = playerOneIcon;
+            // Reset units
+            foreach (GameObject unit in unitsIAonScene)
+            {
+                unit.GetComponent<Unit>().actionDone = false;
+                unit.GetComponent<Unit>().pathfindingDoneThisTurn = false;
+                unit.GetComponent<Unit>().stepsTaken = 0;
+                unit.GetComponent<BTCharacter>().actionInitialized = false;
+                unitElement = 0;
+            }
             playerTurn = 1;
         }
 

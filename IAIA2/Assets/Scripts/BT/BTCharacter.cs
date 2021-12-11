@@ -18,6 +18,7 @@ public class BTCharacter : MonoBehaviour
     Nodo nodoInicio;
     Nodo nodoFinal;
     List<Nodo> path;
+    public bool actionInitialized = false; 
     float influenciaMin, abajo, derecha, arriba, izquierda;
     public enum Percept
     {
@@ -237,6 +238,7 @@ public class BTCharacter : MonoBehaviour
             pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
             //Debug.Log(path.Count);
         }
+        actionInitialized = true;
     }    
 }
 

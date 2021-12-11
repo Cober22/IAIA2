@@ -8810,7 +8810,7 @@ PrefabInstance:
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
       propertyPath: seed
-      value: 98972
+      value: 65670
       objectReference: {fileID: 0}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -10994,6 +10994,7 @@ MonoBehaviour:
   player2GoldText: {fileID: 993916837}
   createdUnit: {fileID: 0}
   createdVillage: {fileID: 0}
+  unitsIAonScene: []
   blueVictory: {fileID: 223296950}
   darkVictory: {fileID: 775957142}
 --- !u!82 &1518080665
