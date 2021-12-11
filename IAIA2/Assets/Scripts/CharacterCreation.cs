@@ -50,14 +50,14 @@ public class CharacterCreation : MonoBehaviour
 
     public void BuyUnit (Unit unit) {
 
-        if (unit.playerNumber == 1 && unit.cost <= gm.player1Gold)
+        if (unit.playerNumber == 1 && unit.cost <= GM.player1Gold)
         {
             player1Menu.SetActive(false);
-            gm.player1Gold -= unit.cost;
-        } else if (unit.playerNumber == 2 && unit.cost <= gm.player2Gold)
+            GM.player1Gold -= unit.cost;
+        } else if (unit.playerNumber == 2 && unit.cost <= GM.player2Gold)
         {
             player2Menu.SetActive(false);
-            gm.player2Gold -= unit.cost;
+            GM.player2Gold -= unit.cost;
         } else {
             print("NOT ENOUGH GOLD, SORRY!");
             return;
@@ -81,15 +81,15 @@ public class CharacterCreation : MonoBehaviour
     }
 
     public void BuyVillage(Village village) {
-        if (village.playerNumber == 1 && village.cost <= gm.player1Gold)
+        if (village.playerNumber == 1 && village.cost <= GM.player1Gold)
         {
             player1Menu.SetActive(false);
-            gm.player1Gold -= village.cost;
+            GM.player1Gold -= village.cost;
         }
-        else if (village.playerNumber == 2 && village.cost <= gm.player2Gold)
+        else if (village.playerNumber == 2 && village.cost <= GM.player2Gold)
         {
             player2Menu.SetActive(false);
-            gm.player2Gold -= village.cost;
+            GM.player2Gold -= village.cost;
         }
         else
         {

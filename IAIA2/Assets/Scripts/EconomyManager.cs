@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EconomyManager : MonoBehaviour
 {
-    public GM gm;
+    //public GM gm;
 
     private void Update()
     {
@@ -34,22 +34,21 @@ public class EconomyManager : MonoBehaviour
             money += 35;
         }
 
-        if (gm.playerTurn == 1) //turno enemigo
+        if (GameObject.Find("Map Generator").GetComponent<GM>().playerTurn == 1) //turno enemigo
         {
-            gm.player1Gold += money;
+            GM.player1Gold += money;
         }
         else //turno aliado (2)
         {
-            gm.player2Gold += money;
+            GM.player2Gold += money;
         }
 
         //actualizamos la cantidad de oro de ambos jugadores
-        gm.UpdateGoldText();
+        GameObject.Find("Map Generator").GetComponent<GM>().UpdateGoldText();
     }
 
     public int FeedUnits(List<GameObject> units, int gold) //dada una lista con las distintas unidades, aliadas o enemigas y el monedero correspondiente
     {
-        Debug.Log("EStoy feed");
         int necessaryMoney = 0;
         int wallet = gold;
         List<GameObject> unitsToEliminate = new List<GameObject>();
@@ -58,13 +57,10 @@ public class EconomyManager : MonoBehaviour
         {
             if (wallet - unit.transform.GetComponent<Unit>().feedingCost < 0)
             {
-                Debug.Log("Destruir");
                 unitsToEliminate.Add(unit);
-                Destroy(unit);
             }
             else
             {
-                Debug.Log("Alimentar");
                 necessaryMoney += unit.transform.GetComponent<Unit>().feedingCost;
                 wallet -= unit.transform.GetComponent<Unit>().feedingCost;
             }
@@ -73,9 +69,8 @@ public class EconomyManager : MonoBehaviour
         foreach (GameObject unit in unitsToEliminate)
         {
             units.Remove(unit);
+            Destroy(unit);
         }
-
-        Debug.Log("Dinero necesario: " + necessaryMoney);
 
         return necessaryMoney;
     }

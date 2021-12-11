@@ -157,7 +157,7 @@ MonoBehaviour:
   feedingCost: 4
   isSelected: 0
   hasMoved: 0
-  tileSpeed: 4
+  tileSpeed: 6
   moveSpeed: 10
   pathfindingDoneThisTurn: 0
   attackRadius: 1

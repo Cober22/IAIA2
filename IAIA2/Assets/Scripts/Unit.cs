@@ -57,39 +57,53 @@ public class Unit : MonoBehaviour
 
     public bool actionDone;
 
+
     [HideInInspector]
     public Vector3 position;
 
     private void Awake()
     {
-        if (this.name.Contains("Aliado"))
+        bool aliado = this.name.Contains("Aliado");
+
+        if (this.name.Contains("Guerrero"))
         {
-            if (this.name.Contains("Guerrero"))
+            if (aliado)
             {
                 influenceValue = 20f;
                 maxSteps = 4;
-            }
-            else if (this.name.Contains("Tanque"))
+            } else 
+                GetComponent<BTCharacter>().mode = BTCharacter.Mode.Ataque;
+        }
+        else if (this.name.Contains("Tanque"))
+        {
+            if (aliado)
             {
                 influenceValue = 15f;
                 maxSteps = 3;
-            }
-            else if (this.name.Contains("Volador"))
+            } 
+            else
+                GetComponent<BTCharacter>().mode = BTCharacter.Mode.Defensa;
+        }
+        else if (this.name.Contains("Volador"))
+        {
+            if (aliado)
             {
                 influenceValue = 10f;
                 maxSteps = 5;
             }
-
-            healthTotal = health;
-
-            MapGenerator._influenceMap.RegisterPropagator(this);
-        } else
-        {
-            maxSteps = tileSpeed;
+            else
+                GetComponent<BTCharacter>().mode = BTCharacter.Mode.Ataque;
         }
 
+        healthTotal = health;
+
+        MapGenerator._influenceMap.RegisterPropagator(this);
+
+        if (!aliado)
+            maxSteps = tileSpeed;
+
+
         position = this.transform.position;
-        
     }
 
     private void Start()
@@ -101,7 +115,6 @@ public class Unit : MonoBehaviour
         pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
         actionDone = false;
         //maxSteps = tileSpeed;
-
     }
     public void RebootPropagators()
     {
@@ -124,7 +137,7 @@ public class Unit : MonoBehaviour
                     if (stepsTaken >= maxSteps)
                     {
                         actionDone = true;
-                        Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
+                        Nodo nodo = GameObject.Find("/Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
                         nodo.IsWall = true;
                     }
             }
@@ -402,7 +415,7 @@ public class Unit : MonoBehaviour
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime*8f);
+        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime*6f);
 
         if (distanceToNextNode < 0.01f && count < finalPath.Count)
         {

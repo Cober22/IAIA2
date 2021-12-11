@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class GM : MonoBehaviour
 {
-    public EconomyManager EM;
-
     public Unit selectedUnit;
 
     public int playerTurn = 2;
@@ -27,8 +25,8 @@ public class GM : MonoBehaviour
     public Text armorInfo;
     public Text defenseDamageInfo;
 
-    public int player1Gold;
-    public int player2Gold;
+    public static int player1Gold;
+    public static int player2Gold;
 
     public Text player1GoldText;
     public Text player2GoldText;
@@ -46,33 +44,36 @@ public class GM : MonoBehaviour
     private int unitElement;
     int numUnits;
 
-    private void Start()
+    private void Awake()
     {
         unitElement = 0;
         source = GetComponent<AudioSource>();
         camAnim = Camera.main.GetComponent<Animator>();
         GetGoldIncome(1);
 
-        numUnits = GameObject.Find("/Units").transform.childCount;
+        player1Gold = 10000;
+        player2Gold = 10000;
 
-        for (int i = 0; i < numUnits; i++)
-        {
-            GameObject unitToAdd = GameObject.Find("/Units").transform.GetChild(i).gameObject;
-            if (unitToAdd.layer == 7)
-                unitsIAonScene.Add(unitToAdd);
-        }
+        UpdateGoldText();
+
     }
 
     private void Update()
     {
-        //numUnits = GameObject.Find("/Units").transform.childCount;
+        numUnits = GameObject.Find("/Units").transform.childCount;
+        for (int i = 0; i < numUnits; i++)
+        {
+            GameObject unitToAdd = GameObject.Find("/Units").transform.GetChild(i).gameObject;
+            if (unitToAdd.layer == 7 && !unitsIAonScene.Contains(unitToAdd))
+                unitsIAonScene.Add(unitToAdd);
+        }
+        numUnits = GameObject.Find("/Units").transform.childCount;
 
         //Debug.Log("Turn: " + playerTurn + " Unit: " + unitElement + " Total: " + numUnits);
         if(playerTurn == 1 && unitElement >= numUnits)
         {
-
             EndTurn(); 
-            player2Gold -= EM.FeedUnits(MapGenerator.unitsPlayer, player2Gold); 
+            player2Gold -= GetComponent<EconomyManager>().FeedUnits(MapGenerator.unitsPlayer, player2Gold); 
             UpdateGoldText();
         }
 
@@ -82,8 +83,8 @@ public class GM : MonoBehaviour
             if (playerTurn == 2)
             {
                 EndTurn();
-                player1Gold -= EM.FeedUnits(MapGenerator.unitsEnemy, player1Gold);
-                UpdateGoldText();
+                //player1Gold -= EM.FeedUnits(MapGenerator.unitsEnemy, player1Gold);
+                //UpdateGoldText(); 
             }
 
         if (selectedUnit != null) // moves the white square to the selected unit!
@@ -115,7 +116,7 @@ public class GM : MonoBehaviour
             } 
             else if (unit.layer != 7)
                 unitElement++;
-        }
+        } 
     }
 
     // Sets panel active/inactive and moves it to the correct place

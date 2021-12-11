@@ -8810,7 +8810,7 @@ PrefabInstance:
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
       propertyPath: seed
-      value: 8572
+      value: 84585
       objectReference: {fileID: 0}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -8936,7 +8936,7 @@ PrefabInstance:
         type: 3}
       propertyPath: unitsCollection.Array.data[0].unit
       value: 
-      objectReference: {fileID: 203797387408590348, guid: e4ad95c761a65f243b449f1e95d0c00e,
+      objectReference: {fileID: 626269173632994743, guid: dfd3953b532394b459bb5b605feb9936,
         type: 3}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -8947,7 +8947,7 @@ PrefabInstance:
         type: 3}
       propertyPath: unitsCollection.Array.data[1].unit
       value: 
-      objectReference: {fileID: 626269173632994743, guid: dfd3953b532394b459bb5b605feb9936,
+      objectReference: {fileID: 203797387408590348, guid: e4ad95c761a65f243b449f1e95d0c00e,
         type: 3}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -8969,7 +8969,7 @@ PrefabInstance:
         type: 3}
       propertyPath: unitsCollection.Array.data[3].unit
       value: 
-      objectReference: {fileID: 4446637798450979530, guid: f39be49cad0c02340820d187847171e4,
+      objectReference: {fileID: 3293640991218369701, guid: e29861ac58e55d04ca67678a523a8c67,
         type: 3}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -8980,7 +8980,7 @@ PrefabInstance:
         type: 3}
       propertyPath: unitsCollection.Array.data[4].unit
       value: 
-      objectReference: {fileID: 3293640991218369701, guid: e29861ac58e55d04ca67678a523a8c67,
+      objectReference: {fileID: 4446637798450979530, guid: f39be49cad0c02340820d187847171e4,
         type: 3}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -11015,13 +11015,10 @@ MonoBehaviour:
   attackDamageInfo: {fileID: 134779321}
   armorInfo: {fileID: 1346136015}
   defenseDamageInfo: {fileID: 1527083051}
-  player1Gold: 40
-  player2Gold: 40
   player1GoldText: {fileID: 495775305}
   player2GoldText: {fileID: 993916837}
   createdUnit: {fileID: 0}
   createdVillage: {fileID: 0}
-  unitsIAonScene: []
   blueVictory: {fileID: 223296950}
   darkVictory: {fileID: 775957142}
 --- !u!82 &1518080665

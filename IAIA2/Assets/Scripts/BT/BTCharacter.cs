@@ -6,10 +6,10 @@ using UnityEngine;
 using static influenceMap;
 
 public class BTCharacter : MonoBehaviour
-{   
+{
     //Ahora mismo es una FSM, se puede adaptar para el BT 
-    
-    Mode mode;
+
+    public Mode mode = Mode.Defensa;
     GameObject enemyCloser;
     GameObject hootchCloser;
     PathfindingAStar pathfinding;
@@ -20,7 +20,6 @@ public class BTCharacter : MonoBehaviour
     List<Nodo> path;
     public bool actionInitialized = false; 
     float influenciaMin, abajo, derecha, arriba, izquierda;
-
     public bool conquistarVilla;
     public enum Percept
     {
@@ -87,7 +86,7 @@ public class BTCharacter : MonoBehaviour
     private bool IsUnitMoneySupply()
     {
         //Se comprueba que el dinero de la IA es >= 20 para mantener viva a la unidad
-        return true;
+        return GM.player1Gold - GetComponent<Unit>().feedingCost > 0;
     }
     private bool IsCastleUnderAttack()
     {
@@ -102,7 +101,6 @@ public class BTCharacter : MonoBehaviour
     }
     private bool IsEnemyClose()
     {
-
         List<Tile> tiles = GetComponent<Unit>().GetTilesInRange();
         
         foreach (Tile tile in tiles)
@@ -156,15 +154,20 @@ public class BTCharacter : MonoBehaviour
         var percepts = GetPerceptsAnalysis();
         if (percepts.Contains(Percept.Dead))
         {
-            //c muere
+            if (GameObject.FindObjectOfType<GM>().unitsIAonScene.Count > 0)
+                GameObject.FindObjectOfType<GM>().unitsIAonScene.Remove(gameObject);
+            Destroy(gameObject);
         } else
         {
             if (percepts.Contains(Percept.UnitMoneySupply))
             {
-                //Quita 20 monedas
+                GM.player1Gold -= GetComponent<Unit>().feedingCost;
+                GameObject.FindObjectOfType<GM>().UpdateGoldText();
             }
             if (percepts.Contains(Percept.CastleUnderAttack))
             {
+                Debug.Log("ENTRAAAAA");
+
                 //Va al castillo
                 SetMode(Mode.Defensa);
             }
@@ -195,52 +198,41 @@ public class BTCharacter : MonoBehaviour
             if (percepts.Contains(Percept.EnemyClose))
             {
                 //Ir a la unidad enemiga con baja vida más cercana y atacar (mapa de infuencia) (variable closerenemy)
-
-                //Debug.Log("Enemigo cercano: " + this.name + transform.position);
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
                 nodoFinal = grid.NodeFromWorldPosition(enemyCloser.transform.position);
 
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-                Debug.Log(path.Count);
 
             }
             else if (percepts.Contains(Percept.VilleRangeToConquer))
             {
                 //Ir a villa en rango no conquistada (hootchCloser) y conquistarla
-                //Debug.Log("Conquistar villa: " + hootchCloser.name + transform.position);
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
                 nodoFinal = grid.NodeFromWorldPosition(hootchCloser.transform.position);
 
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-                Debug.Log(path.Count);
                 conquistarVilla = true;
-
             }
             else //No hay villa ni enemigo cercano
             {
-
-                //Debug.Log(gameObject.name + transform.position);
                 //Avanza sin mas si NO es un tanque
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
 
-                List<Nodo> pathNodesAvailable = GameObject.Find("Map Generator").GetComponent<MapGenerator>().pathfing_NodesAvailable;
+                List<Nodo> pathNodesAvailable = GameObject.FindObjectOfType<MapGenerator>().pathfing_NodesAvailable;
 
                 int posFinal = UnityEngine.Random.Range(0, pathNodesAvailable.Count);
                 nodoFinal = grid.NodeFromWorldPosition(pathNodesAvailable[posFinal].position);
 
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-                //Debug.Log(path.Count);
 
             }
         }
         else if (ActualMode == Mode.Defensa)
         {
-            //Debug.Log(transform.position);
             nodoInicio = grid.NodeFromWorldPosition(transform.position);
             nodoFinal = MapGenerator.nodoCastilloEnemigo;
             
             pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-            //Debug.Log(path.Count);
         }
         actionInitialized = true;
     }    
