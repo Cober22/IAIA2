@@ -64,25 +64,37 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
-        if (this.name.Contains("Guerrero"))
+        if (this.name.Contains("Aliado"))
         {
-            influenceValue = 15f;
-            maxSteps = 4;
-        }
-        else if (this.name.Contains("Tanque"))
-        {
-            influenceValue = 10f;
-            maxSteps = 3;
-        }
-        else if (this.name.Contains("Volador"))
-        {
-            influenceValue = 5f;
-            maxSteps = 5;   
-        }
+            if (this.name.Contains("Guerrero"))
+            {
+                influenceValue = 20f;
+                maxSteps = 4;
+            }
+            else if (this.name.Contains("Tanque"))
+            {
+                influenceValue = 15f;
+                maxSteps = 3;
+            }
+            else if (this.name.Contains("Volador"))
+            {
+                influenceValue = 10f;
+                maxSteps = 5;
+            }
 
-        healthTotal = health;
+            healthTotal = health;
 
-        MapGenerator._influenceMap.RegisterPropagator(this);
+            MapGenerator._influenceMap.RegisterPropagator(this);
+        }
+        
+    }
+
+    public void RebootPropagators()
+    {
+        if (this.name.Contains("Aliado"))
+        {
+            MapGenerator._influenceMap.RegisterPropagator(this);
+        }
     }
 
     private void Update()

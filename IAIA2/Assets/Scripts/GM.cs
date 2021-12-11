@@ -151,12 +151,17 @@ public class GM : MonoBehaviour
         createdUnit = null;
 
         // Actualizar mapa de influencia y actualizar valor de influencia de los nodos
+        MapGenerator._influenceMap.DeletePropagators();
+        foreach (Unit unit in units)
+        {
+            unit.GetComponent<Unit>().RebootPropagators();
+        }
         MapGenerator._influenceMap.Propagate();
         float[,] influenceMap = MapGenerator._influenceMap.GetInfluences();
 
         for (int x = 0; x < influenceMap.GetLength(0); x++)
             for (int y = influenceMap.GetLength(1) - 1; y >= 0; y--)
-                GameObject.Find("Map Generator").GetComponent<Grid>().grid[x, influenceMap.GetLength(1) - 1 - y].influencia = influenceMap[x, y];
+                GameObject.Find("Map Generator").GetComponent<Grid>().grid[x, /*influenceMap.GetLength(1) - 1 -*/ y].influencia = influenceMap[x, y];
 
         Nodo[,] grid = GameObject.Find("Map Generator").GetComponent<Grid>().grid;
     }

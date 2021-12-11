@@ -96,6 +96,7 @@ public class influenceMap : MonoBehaviour
 
         public void RegisterPropagator(Unit p)
         {
+            //Debug.Log("Registrado");
             _propagators.Add(p);
         }
 
@@ -104,6 +105,20 @@ public class influenceMap : MonoBehaviour
             UpdatePropagators();
             UpdatePropagation();
             UpdateInfluenceBuffer();
+        }
+
+        public void DeletePropagators()
+        {
+            _propagators.Clear();
+            ///Debug.Log("Longitud" + _propagators.Count);
+            for (int i = 0; i < _influences.GetLength(0); i++)
+            {
+                for (int j = 0; j < _influences.GetLength(1); j++)
+                {
+                    _influences[i, j] = 0;
+                }
+            }
+            //Debug.Log(_influences[0,0]);
         }
 
         void UpdatePropagators()

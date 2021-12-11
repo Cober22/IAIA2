@@ -111,12 +111,12 @@ public class MapGenerator : MonoBehaviour {
         while (units.transform.childCount != 6)
             GenerateMap();
 
-        //InvokeRepeating("PropagationUpdate", 0.001f, 1.0f / _updateFrequency);
+        InvokeRepeating("PropagationUpdate", 0.001f, 1.0f / _updateFrequency);
     }
 
     void PropagationUpdate()
     {
-        _influenceMap.Propagate();
+        //_influenceMap.Propagate();
         _influenceMap.GetInfluencesConsole();
     }
 

@@ -122,30 +122,13 @@ public class Grid : MonoBehaviour
 
     public Vector2 Vec2FromWorldPosition(Vector3 a_WorldPosition)
     {
-        float xpoint;
-        if (a_WorldPosition.x < 0)
-        {
-            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) - Mathf.Abs(a_WorldPosition.x));
-        }
-        else
-        {
-            xpoint = (Mathf.RoundToInt(gridWorldSize.x / 2) + a_WorldPosition.x);
-        }
+        float percentX = (a_WorldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
+        float percentY = (a_WorldPosition.y + gridWorldSize.y / 2) / gridWorldSize.y;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
 
-        float ypoint;
-
-        if (a_WorldPosition.y < 0)
-        {
-            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) - Mathf.Abs(a_WorldPosition.y));
-        }
-        else
-        {
-            ypoint = (Mathf.RoundToInt(gridWorldSize.y / 2) + a_WorldPosition.y);
-        }
-
-        int x = Mathf.Abs(Mathf.RoundToInt(xpoint));
-        int y = Mathf.Abs(Mathf.RoundToInt(ypoint));
-
+        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
         return new Vector2(x, y);
     }
 
