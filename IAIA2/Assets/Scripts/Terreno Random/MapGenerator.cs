@@ -108,8 +108,11 @@ public class MapGenerator : MonoBehaviour {
         foreach(UnitType unit in unitsCollection)
             totalUnits += unit.cantidad;
 
-        while (units.transform.childCount != 6)
+        while (units.transform.childCount < 6)
+        {
+            Debug.Log("Generate");
             GenerateMap();
+        }
 
         InvokeRepeating("PropagationUpdate", 0.001f, 1.0f / _updateFrequency);
     }
@@ -157,9 +160,9 @@ public class MapGenerator : MonoBehaviour {
     public void GenerateMap()
     {
         seed = Random.Range(0, 100000);
+        RestoreMap();
         float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offset);
 
-        RestoreMap();
 
         //-----------   CREACIÓN DE UNIDADES Y DE CASTILLO   -----------//
         int posX = Random.Range(0, marginX);

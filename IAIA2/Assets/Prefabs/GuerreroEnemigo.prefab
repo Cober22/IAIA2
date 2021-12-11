@@ -513,8 +513,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSelected: 0
   hasMoved: 0
-  tileSpeed: 2
+  tileSpeed: 3
   moveSpeed: 10
+  pathfindingDoneThisTurn: 0
   attackRadius: 1
   hasAttacked: 0
   enemiesInRange: []
@@ -533,6 +534,9 @@ MonoBehaviour:
   isKing: 0
   displayedText: {fileID: 0}
   influenceValue: 0
+  count: 0
+  stepsTaken: 0
+  actionDone: 0
 --- !u!114 &1771498148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -558,6 +562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096a0bd9c72c974479d0ee1e35b4392f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionInitialized: 0
 --- !u!82 &1562438027
 AudioSource:
   m_ObjectHideFlags: 0

@@ -52,7 +52,7 @@ public class influenceMap : MonoBehaviour
 
                 matriz += "\n";
             }
-            Debug.Log(matriz);
+            //Debug.Log(matriz);
         }
 
         public float GetValue(int x, int y)

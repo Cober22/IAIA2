@@ -78,6 +78,9 @@ public class Unit : MonoBehaviour
             healthTotal = health;
 
             MapGenerator._influenceMap.RegisterPropagator(this);
+        } else
+        {
+            maxSteps = tileSpeed;
         }
         
     }
@@ -102,9 +105,7 @@ public class Unit : MonoBehaviour
     }
 
     private void Update()
-    {
-        // PROVISIONAL
-        maxSteps = tileSpeed;
+    {        
         // UNA ACCION POR TURNO
         if (gameObject.layer == 7)
             if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !actionDone)
@@ -113,10 +114,12 @@ public class Unit : MonoBehaviour
                     MoveThroughNodes(finalPath);    
 
                 if(finalPath != null && finalPath.Count > 0)
-                {
-                    if (stepsTaken >= maxSteps || transform.position == finalPath[finalPath.Count-1].position)
+                    if (stepsTaken >= maxSteps)
+                    {
                         actionDone = true;
-                }
+                        Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
+                        nodo.IsWall = true;
+                    }
             }
     }
 
@@ -351,7 +354,7 @@ public class Unit : MonoBehaviour
         Color color = Color.white;
         if (finalPath != null && finalPath.Count > 0)
         {
-            if(this.name.Contains("Guerrero"))
+            if (this.name.Contains("Guerrero"))
                 color = Color.red;
             else if (this.name.Contains("Tanque"))
                 color = Color.magenta;
@@ -389,19 +392,21 @@ public class Unit : MonoBehaviour
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
 
-        if (distanceToNextNode < 0.2f)
+        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
+        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime);
+
+        if (distanceToNextNode < 0.01f && count < finalPath.Count)
         {
             stepsTaken++;
             count++;
         }
 
-        if (count >= (path.Count - 1))
-            finalPath = null;
+        if (count >= finalPath.Count)
+        {
+            Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
+            nodo.IsWall = true;
+            actionDone = true;
+        }
 
-        // El NPC se girara para mirar siempre hacia su objetivo
-        //transform.LookAt(path[count].position);
-
-        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime);
     }
 }

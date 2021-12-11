@@ -600,8 +600,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSelected: 0
   hasMoved: 0
-  tileSpeed: 2
+  tileSpeed: 3
   moveSpeed: 10
+  pathfindingDoneThisTurn: 0
   attackRadius: 1
   hasAttacked: 0
   enemiesInRange: []
@@ -620,6 +621,9 @@ MonoBehaviour:
   isKing: 0
   displayedText: {fileID: 0}
   influenceValue: 0
+  count: 0
+  stepsTaken: 0
+  actionDone: 0
 --- !u!114 &1584046052
 MonoBehaviour:
   m_ObjectHideFlags: 0

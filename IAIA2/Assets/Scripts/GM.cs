@@ -65,7 +65,7 @@ public class GM : MonoBehaviour
     {
         //numUnits = GameObject.Find("/Units").transform.childCount;
 
-        Debug.Log("Turn: " + playerTurn + " Unit: " + unitElement + " Total: " + numUnits);
+        //Debug.Log("Turn: " + playerTurn + " Unit: " + unitElement + " Total: " + numUnits);
         if(playerTurn == 1 && unitElement >= numUnits)
             EndTurn();
 
@@ -190,6 +190,8 @@ public class GM : MonoBehaviour
             // Reset units
             foreach (GameObject unit in unitsIAonScene)
             {
+                Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(unit.transform.position);
+                nodo.IsWall = false;
                 unit.GetComponent<Unit>().actionDone = false;
                 unit.GetComponent<Unit>().pathfindingDoneThisTurn = false;
                 unit.GetComponent<Unit>().stepsTaken = 0;

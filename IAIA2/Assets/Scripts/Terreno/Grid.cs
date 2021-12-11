@@ -139,13 +139,13 @@ public class Grid : MonoBehaviour
     //    {
     //        foreach (Nodo nodo in grid)
     //        {
+    //            Gizmos.color = Color.black;
     //            if (nodo.IsWall)
-    //                Gizmos.color = Color.white;
-    //            else
-    //                Gizmos.color = Color.black;
-               
+    //                Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
+    //                //Gizmos.color = Color.white;
+    //            //else
+
     //            //Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
-    //            Gizmos.DrawCube(test, Vector3.one * (nodeDiameter - distance));
     //        }
     //    }
     //}
