@@ -39,7 +39,7 @@ public class Village : MonoBehaviour
         {
             foreach (Nodo vecino in vecinos)
             {
-                //Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
+                Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
                 if (grid.NodeFromWorldPosition(unit.position) == vecino)
                 {
                     if (unit.gameObject.layer == 7 && unit.gameObject.GetComponent<BTCharacter>().conquistarVilla)

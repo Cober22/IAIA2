@@ -245,17 +245,6 @@ public class MapGenerator : MonoBehaviour {
         RenderNonPathSprites(obstacles_NodesAvailable, obstaclesNodes, n_Obstacles, "/Obstacles", 3);
 
         RenderNonPathSprites(hootchs_NodesAvailable, hootchsNodes, n_Hootchs, "/Hootchs", 4);
-
-        deleteColliders();
-    }
-
-    private void deleteColliders()
-    {
-        List<GameObject> plants = new List<GameObject>();
-        for (int i = 0; i < GameObject.Find("Environment").transform.childCount; i++)
-        {
-            GameObject.Find("Environment").transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-        }
     }
 
     private void RenderNonPathSprites(List<Nodo> elements, List<Nodo> finalElements, int numElements, string parentName, int index)
