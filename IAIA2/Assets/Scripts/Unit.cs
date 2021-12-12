@@ -411,6 +411,13 @@ public class Unit : MonoBehaviour
 
     private void MoveThroughNodes(List<Nodo> path)
     {
+        //si en el camino el último nodo es el castillo, lo quitamos de las listas del camino
+        if (count == 0 && finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo)
+        {
+            finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
+            path.Remove(MapGenerator.nodoCastilloEnemigo);
+        }
+
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
 
@@ -428,6 +435,23 @@ public class Unit : MonoBehaviour
             Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
             nodo.IsWall = true;
             actionDone = true;
+        }
+
+        //ESTO LUEGO HAY QUE QUITARLO, CUANDO EL BT ESTÉ FINO FINO
+        if (count == finalPath.Count)
+        {
+            bool aliado = this.name.Contains("Aliado");
+
+            if (this.name.Contains("Tanque"))
+            {
+                if (aliado)
+                {
+                    influenceValue = 15f;
+                    maxSteps = 3;
+                }
+                else
+                    GetComponent<BTCharacter>().mode = BTCharacter.Mode.Ataque;
+            }
         }
 
     }
