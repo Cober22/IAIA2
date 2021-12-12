@@ -12,7 +12,7 @@ public class Village : MonoBehaviour
 
     private Grid grid;
 
-    private bool pulsado;
+    //private bool pulsado;
 
     List<Nodo> vecinos;
 
@@ -22,7 +22,7 @@ public class Village : MonoBehaviour
 
     public void Start()
     {
-        pulsado = false;
+        //pulsado = false;
 
         grid = GameObject.Find("Map Generator").GetComponent<Grid>();
 
@@ -39,23 +39,19 @@ public class Village : MonoBehaviour
         {
             foreach (Nodo vecino in vecinos)
             {
-                //Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
+                Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
                 if (grid.NodeFromWorldPosition(unit.position) == vecino)
                 {
-                    if (unit.gameObject.name.Contains("Enemigo") && unit.gameObject.GetComponent<BTCharacter>().conquistarVilla)
+                    if (unit.gameObject.layer == 7 && unit.gameObject.GetComponent<BTCharacter>().conquistarVilla)
                     {
                         conqueredByIA = true;
                         conqueredByPlayer = false;
                     }
-                    else if (pulsado)
+                    else if (Input.GetKeyDown(KeyCode.E))
                     {
-                        if (unit.gameObject.layer != 7)
-                        {
-                            conqueredByIA = false;
-                            conqueredByPlayer = true;
-
-                        }
-                        pulsado = false;
+                        conqueredByIA = false;
+                        conqueredByPlayer = true;
+                        //pulsado = false;
                     }
                 }
             }
@@ -74,10 +70,10 @@ public class Village : MonoBehaviour
         }
     }
 
-    private void OnMouseDown()
+    /*private void OnMouseDown()
     {
         pulsado = true;
-        //Debug.Log("pulsado: " + pulsado);
-    }
+        Debug.Log("pulsado: " + pulsado);
+    }*/
 
 }
