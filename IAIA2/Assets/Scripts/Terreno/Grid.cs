@@ -159,23 +159,23 @@ public class Grid : MonoBehaviour
         return new Vector2(x, y);
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-        if (grid != null)
-        {
-            foreach (Nodo nodo in grid)
-            {
-                Gizmos.color = Color.black;
-                if (nodo.IsWall)
-                    Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
-                //Gizmos.color = Color.white;
-                //else
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+    //    if (grid != null)
+    //    {
+    //        foreach (Nodo nodo in grid)
+    //        {
+    //            Gizmos.color = Color.black;
+    //            if (nodo.IsWall)
+    //                Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
+    //                //Gizmos.color = Color.white;
+    //            //else
 
-                //Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
-            }
-        }
-    }
+    //            //Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
+    //        }
+    //    }
+    //}
 }
 
 //[System.Serializable]

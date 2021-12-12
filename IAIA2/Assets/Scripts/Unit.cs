@@ -115,11 +115,7 @@ public class Unit : MonoBehaviour
         pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
         actionDone = false;
         //maxSteps = tileSpeed;
-
-        Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
-        nodo.IsWall = true;
     }
-
     public void RebootPropagators()
     {
         if (this.name.Contains("Aliado"))
@@ -356,12 +352,8 @@ public class Unit : MonoBehaviour
         }
     }
 
-    IEnumerator StartMovement(Transform movePos)
-    {
-        Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
-        nodo.IsWall = false;
+    IEnumerator StartMovement(Transform movePos) { // Moves the character to his new position.
 
-        // Moves the character to his new position.
         while (transform.position.x != movePos.position.x) { // first aligns him with the new tile's x pos
             transform.position = Vector2.MoveTowards(transform.position, new Vector2(movePos.position.x, transform.position.y), moveSpeed * Time.deltaTime);
             yield return null;
@@ -376,9 +368,6 @@ public class Unit : MonoBehaviour
         ResetWeaponIcon();
         GetEnemies();
         gm.MoveInfoPanel(this);
-
-        nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
-        nodo.IsWall = true;
     }
 
     private void OnDrawGizmos()
@@ -422,12 +411,6 @@ public class Unit : MonoBehaviour
 
     private void MoveThroughNodes(List<Nodo> path)
     {
-        if (count == 0)
-        {
-            Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
-            nodo.IsWall = false;
-        }
-
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
 
