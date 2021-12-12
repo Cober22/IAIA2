@@ -383,11 +383,39 @@ public class Unit : MonoBehaviour
         if (finalPath != null && finalPath.Count > 0)
         {
             if (this.name.Contains("Guerrero"))
-                color = Color.red;
+            {
+                if (this.name.Contains("Aliado"))
+                {
+                    color = Color.red;
+                }
+                else
+                {
+                    color = Color.blue;
+                }
+            }
             else if (this.name.Contains("Tanque"))
-                color = Color.magenta;
+            {
+                if (this.name.Contains("Aliado"))
+                {
+                    color = Color.gray;
+                }
+                else
+                {
+                    color = Color.yellow;
+                }
+            }
             else if (this.name.Contains("Volador"))
-                color = Color.blue;
+            {
+                if (this.name.Contains("Aliado"))
+                {
+                    color = Color.cyan;
+                }
+                else
+                {
+                    color = Color.magenta;
+                }
+            }
+
 
             Gizmos.color = color;
             foreach (Nodo nodo in finalPath)
