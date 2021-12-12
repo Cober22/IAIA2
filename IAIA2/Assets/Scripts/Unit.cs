@@ -265,6 +265,12 @@ public class Unit : MonoBehaviour
     public void Move(Transform movePos)
     {
         gm.ResetTiles();
+
+        Nodo nodoInicial = GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(transform.position);
+        Nodo nodoFinal = GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(movePos.position);
+
+        pathfinding.PathfindingPlayer(nodoInicial, nodoFinal, ref finalPath);
+
         StartCoroutine(StartMovement(movePos));
     }
 

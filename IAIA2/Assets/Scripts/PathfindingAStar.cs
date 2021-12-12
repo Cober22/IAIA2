@@ -91,4 +91,54 @@ public class PathfindingAStar : MonoBehaviour
 
         return x + y;
     }
+
+    void FindPathPlayer(Nodo a_StartPos, Nodo a_TargetPos, ref List<Nodo> path)
+    {
+        Nodo startNode = a_StartPos;
+        Nodo targetNode = a_TargetPos;
+
+        List<Nodo> OpenList = new List<Nodo>();
+        HashSet<Nodo> ClosedList = new HashSet<Nodo>();
+
+        OpenList.Add(startNode);
+
+        while (OpenList.Count > 0)
+        {
+            Nodo CurrentNode = OpenList[0];
+
+            for (int i = 1; i < OpenList.Count; i++)
+                if (OpenList[i].FCost < CurrentNode.FCost || OpenList[i].FCost == CurrentNode.FCost && OpenList[i].hCost < CurrentNode.hCost)
+                    CurrentNode = OpenList[i];
+
+            OpenList.Remove(CurrentNode);
+            ClosedList.Add(CurrentNode);
+
+            if (CurrentNode == targetNode)
+                GetFinalPath(startNode, targetNode, ref path);
+
+            foreach (Nodo NeighborNode in grid.GetNeighbouringNodes(CurrentNode))
+            {
+                if (NeighborNode.IsWall || ClosedList.Contains(NeighborNode))
+                    continue;
+                float MoveCost = CurrentNode.gCost + GetDistance(CurrentNode, NeighborNode);
+
+                if (MoveCost < NeighborNode.gCost || !OpenList.Contains(NeighborNode))
+                {
+                    NeighborNode.gCost = MoveCost;
+                    NeighborNode.hCost = GetDistance(NeighborNode, targetNode);
+                    NeighborNode.Parent = CurrentNode;
+
+                    if (!OpenList.Contains(NeighborNode))
+                    {
+                        OpenList.Add(NeighborNode);
+                    }
+                }
+            }
+        }
+    }
+
+    public void PathfindingPlayer(Nodo initialPos, Nodo finalPos, ref List<Nodo> path)
+    {
+        FindPathPlayer(initialPos, finalPos, ref path);
+    }
 }
