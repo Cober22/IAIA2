@@ -63,10 +63,10 @@ public class BTCharacter : MonoBehaviour
         else
         {
             result.Add(Percept.UnitMoneySupply);
-            if (IsCastleUnderAttack())
-                result.Add(Percept.CastleUnderAttack);
             if (IsEnemyClose())
                 result.Add(Percept.EnemyClose);
+            if (IsCastleUnderAttack())
+                result.Add(Percept.CastleUnderAttack);
             if (IsWeakEnemy())
                 result.Add(Percept.WeakEnemy);
             if (IsVilleRangeToConquer())
@@ -185,14 +185,7 @@ public class BTCharacter : MonoBehaviour
                 GM.player1Gold -= GetComponent<Unit>().feedingCost;
                 GameObject.FindObjectOfType<GM>().UpdateGoldText();
             }
-            if (percepts.Contains(Percept.CastleUnderAttack))
-            {
-                //Debug.Log("ENTRAAAAA");
-
-                //Va al castillo
-                SetMode(Mode.Defensa);
-            }
-            else if(percepts.Contains(Percept.EnemyClose))
+            if(percepts.Contains(Percept.EnemyClose))
             {
                 if (this.name.Contains("Guerrero"))
                     SetMode(Mode.Ataque);
@@ -204,6 +197,13 @@ public class BTCharacter : MonoBehaviour
                 //Si es un guerrero modo ataque
                 //else if (percepts.Contains(Percept.WeakEnemy)){ //Modo Ataque}
                 //else { Modo Defensa }
+            }
+            else if (percepts.Contains(Percept.CastleUnderAttack))
+            {
+                //Debug.Log("ENTRAAAAA");
+
+                //Va al castillo
+                SetMode(Mode.Defensa);
             }
             else
             {
@@ -240,8 +240,14 @@ public class BTCharacter : MonoBehaviour
 
                 Nodo nodoDestino = GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(hootchCloser.transform.position);
                 nodoDestino.IsWall = false;
-                if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1.1f)
+                if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1f)
                     pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                else
+                {
+                    GetComponent<Unit>().finalPath = null;
+                    GetComponent<Unit>().actionDone = true;
+                }
+
                 //pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
                 nodoDestino.IsWall = true;
                 conquistarVilla = true;
@@ -255,17 +261,53 @@ public class BTCharacter : MonoBehaviour
                 List<Nodo> pathNodesAvailable = GameObject.FindObjectOfType<MapGenerator>().pathfing_NodesAvailable;
 
                 int posFinal = UnityEngine.Random.Range(0, pathNodesAvailable.Count);
-                nodoFinal = grid.NodeFromWorldPosition(pathNodesAvailable[posFinal].position);
-                nodoInicio.IsWall = false;
+                //nodoFinal = grid.NodeFromWorldPosition(pathNodesAvailable[posFinal].position);
+                //nodoInicio.IsWall = false;
                 //nodoInicio.tile.GetComponent<Tile>().unitInTile = null;
-                pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-                /*if (!name.Contains("Tanque"))
+                //pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                Debug.Log("HOLAx2");
+                if (!this.name.Contains("Tanque"))
                 {
-                    //nodoFinal = MapGenerator.nodoCastilloAliado;
-                    pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-                }
+                    Debug.Log("HOLA");
+                    nodoFinal = MapGenerator.nodoCastilloAliado;
+
+                    if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1)
+                        pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                    else
+                    { // CODIGO DE ACCIÓN CUANDO EL TANQUE ESTA JUNTO AL CASTILLO
+                        GetComponent<Unit>().finalPath = null;
+                        GetComponent<Unit>().actionDone = true;
+                    }
+                } 
                 else
-                    pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);*/
+                {
+                    nodoInicio = grid.NodeFromWorldPosition(transform.position);
+                    nodoFinal = MapGenerator.nodoCastilloEnemigo;
+
+                    if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1)
+                        pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                    else
+                    { // CODIGO DE ACCIÓN CUANDO EL TANQUE ESTA JUNTO AL CASTILLO
+                        GetComponent<Unit>().finalPath = null;
+                        GetComponent<Unit>().actionDone = true;
+                    }
+                }
+                //else
+                //{
+                //    Debug.Log("wdawd");
+                //    List<Nodo> adyacenteCastillo = grid.GetNeighbouringNodes(MapGenerator.nodoCastilloEnemigo);
+
+                //    foreach (Nodo adyacente in adyacenteCastillo)
+                //        if (adyacente != grid.NodeFromWorldPosition(transform.position))
+                //        {
+                //            Debug.Log("HOLAx3" + name);
+                //            nodoFinal = MapGenerator.nodoCastilloEnemigo;
+                //            pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                //        }
+                    //pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                    //GetComponent<Unit>().finalPath = null;
+                    //GetComponent<Unit>().actionDone = true;
+                //}
             }
         }
         else if (ActualMode == Mode.Defensa)

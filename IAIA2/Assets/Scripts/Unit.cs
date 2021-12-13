@@ -556,11 +556,17 @@ public class Unit : MonoBehaviour
         //    i--;
         //}
 
-        if (finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo)
-            finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
+        if (finalPath == null || count >= finalPath.Count)
+        {
+            Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
+            nodo.IsWall = true;
+            actionDone = true;
+            return;
+        }
 
-        //if (finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloEnemigo)
-        //    finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
+        if (finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo || MapGenerator.hootchsNodes.Contains(finalPath[finalPath.Count - 1]) || finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloAliado)
+            finalPath.Remove(finalPath[finalPath.Count - 1]);
+
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
@@ -568,17 +574,13 @@ public class Unit : MonoBehaviour
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime*6f);
 
+        //if (finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloEnemigo)
+        //    finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
         if (distanceToNextNode < 0.01f && count < finalPath.Count)
         {
             stepsTaken++;
             count++;
         }
 
-        if (count >= finalPath.Count)
-        {
-            Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
-            nodo.IsWall = true;
-            actionDone = true;
-        }
     }
 }

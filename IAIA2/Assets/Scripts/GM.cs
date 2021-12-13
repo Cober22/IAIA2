@@ -205,11 +205,11 @@ public class GM : MonoBehaviour
                 Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(unit.transform.position);
                 nodo.IsWall = false;
                 unit.GetComponent<Unit>().actionDone = false;
+                unit.GetComponent<BTCharacter>().actionInitialized = false;
                 unit.GetComponent<Unit>().pathfindingDoneThisTurn = false;
                 unit.GetComponent<Unit>().stepsTaken = 0;
                 unit.GetComponent<Unit>().count = 0;
-                //unit.GetComponent<Unit>().finalPath = null;
-                unit.GetComponent<BTCharacter>().actionInitialized = false;
+                unit.GetComponent<Unit>().finalPath = null;
                 unitElement = 0;
             }
             playerTurn = 1;

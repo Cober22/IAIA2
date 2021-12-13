@@ -169,7 +169,7 @@ public class Grid : MonoBehaviour
     //            Gizmos.color = Color.black;
     //            if (nodo.IsWall)
     //                Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));
-    //                //Gizmos.color = Color.white;
+    //            //Gizmos.color = Color.white;
     //            //else
 
     //            //Gizmos.DrawCube(nodo.position, Vector3.one * (nodeDiameter - distance));

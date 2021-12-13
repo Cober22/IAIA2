@@ -22,6 +22,9 @@ public class Village : MonoBehaviour
 
     public void Start()
     {
+        conqueredByIA = false;
+        conqueredByPlayer = false;
+
         //pulsado = false;
 
         grid = GameObject.Find("Map Generator").GetComponent<Grid>();
