@@ -233,6 +233,11 @@ public class GM : MonoBehaviour
                 GameObject.Find("Map Generator").GetComponent<Grid>().grid[x, /*influenceMap.GetLength(1) - 1 -*/ y].influencia = influenceMap[x, y];
 
         Nodo[,] grid = GameObject.Find("Map Generator").GetComponent<Grid>().grid;
+
+        foreach (Unit unit in units)
+        {
+            unit.GetComponent<Unit>().hasAttacked = false;
+        }
     }
 
     void GetGoldIncome(int playerTurn) {

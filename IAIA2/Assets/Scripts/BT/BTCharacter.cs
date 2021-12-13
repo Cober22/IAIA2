@@ -21,6 +21,7 @@ public class BTCharacter : MonoBehaviour
     public bool actionInitialized = false; 
     float influenciaMin, abajo, derecha, arriba, izquierda;
     public bool conquistarVilla;
+    public bool atacar;
     public enum Percept
     {
         UnitMoneySupply, //Dinero >= 20 para alimentar a la unidad
@@ -151,6 +152,7 @@ public class BTCharacter : MonoBehaviour
     public void Analysis()
     {
         conquistarVilla = false;
+        atacar = false;
         var percepts = GetPerceptsAnalysis();
         if (percepts.Contains(Percept.Dead))
         {
@@ -202,6 +204,7 @@ public class BTCharacter : MonoBehaviour
                 nodoFinal = grid.NodeFromWorldPosition(enemyCloser.transform.position);
 
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                atacar = true;
 
             }
             else if (percepts.Contains(Percept.VilleRangeToConquer))

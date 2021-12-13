@@ -128,12 +128,13 @@ public class Unit : MonoBehaviour
     {        
         // UNA ACCION POR TURNO
         if (gameObject.layer == 7)
+        {
             if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !actionDone)
             {
                 if (finalPath != null && finalPath.Count > 0)
-                    MoveThroughNodes(finalPath);    
+                    MoveThroughNodes(finalPath);
 
-                if(finalPath != null && finalPath.Count > 0)
+                if (finalPath != null && finalPath.Count > 0)
                     if (stepsTaken >= maxSteps)
                     {
                         actionDone = true;
@@ -141,6 +142,40 @@ public class Unit : MonoBehaviour
                         nodo.IsWall = true;
                     }
             }
+
+            Grid grid = GameObject.Find("Map Generator").GetComponent<Grid>();
+            List<Nodo> vecinos = grid.GetNeighbouringNodes(grid.NodeFromWorldPosition(this.transform.position));
+            Unit[] units = FindObjectsOfType<Unit>();
+            GM gm = FindObjectOfType<GM>();
+
+            foreach (Unit unit in units)
+            {
+                foreach (Nodo vecino in vecinos)
+                {
+                    //Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
+                    if (grid.NodeFromWorldPosition(unit.position) == vecino && unit.gameObject.layer != 7 && Input.GetKeyDown(KeyCode.A) && !hasAttacked &&  gm.playerTurn != 1)
+                    {
+                        AttackAliade(unit);
+                    }
+                }
+            }
+
+            if (this.gameObject.GetComponent<BTCharacter>().atacar)
+            {
+                foreach (Unit unit in units)
+                {
+                    foreach (Nodo vecino in vecinos)
+                    {
+                        //Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
+                        if (grid.NodeFromWorldPosition(unit.position) == vecino && unit.gameObject.layer != 7 && !unit.hasAttacked && gm.playerTurn == 1)
+                        {
+                            AttackEnemie(unit);
+                        }
+                    }
+                }
+            }
+        }
+
 
         position = this.transform.position;
     }
@@ -156,17 +191,19 @@ public class Unit : MonoBehaviour
     private void OnMouseDown() // select character or deselect if already selected
     {
         ResetWeaponIcon();
-        if(gameObject.layer != 7)
+        if (gameObject.layer != 7)
         {
             if (isSelected == true)
-            {   
+            {
                 isSelected = false;
                 gm.selectedUnit = null;
                 gm.ResetTiles();
 
             }
-            else {
-                if (playerNumber == gm.playerTurn) { // select unit only if it's his turn
+            else
+            {
+                if (playerNumber == gm.playerTurn)
+                { // select unit only if it's his turn
                     if (gm.selectedUnit != null)
                     { // deselect the unit that is currently selected, so there's only one isSelected unit at a time
                         gm.selectedUnit.isSelected = false;
@@ -176,18 +213,21 @@ public class Unit : MonoBehaviour
                     gm.selectedUnit = this;
 
                     isSelected = true;
-			        if(source != null){
-				        source.Play();
-			        }
-				
+                    if (source != null)
+                    {
+                        source.Play();
+                    }
+
                     GetWalkableTiles();
                     GetEnemies();
                 }
             }
 
-            Collider2D col = Physics2D.OverlapCircle(Camera.main.ScreenToWorldPoint(Input.mousePosition), 0.15f);
+            /*Collider2D col = Physics2D.OverlapCircle(Camera.main.ScreenToWorldPoint(Input.mousePosition), 0.15f);
+            
             if (col != null)
             {
+                Debug.Log(col.gameObject.name);
                 Unit unit = col.GetComponent<Unit>(); // double check that what we clicked on is a unit
                 if (unit != null && gm.selectedUnit != null)
                 {
@@ -197,7 +237,7 @@ public class Unit : MonoBehaviour
 
                     }
                 }
-            }
+            }*/
         }
     }
 
@@ -274,43 +314,68 @@ public class Unit : MonoBehaviour
         StartCoroutine(StartMovement(movePos));
     }
 
-    void Attack(Unit enemy) {
+    public void AttackEnemie(Unit Aliade)
+    {
+        Aliade.hasAttacked = true;
+
+        Debug.Log("atacando");
+
+        int unitDamage = attackDamage - Aliade.armor;
+
+        if (unitDamage >= 1)
+        {
+            Aliade.health -= unitDamage;
+            UpdateHealthDisplay();
+            DamageIcon d = Instantiate(damageIcon, transform.position, Quaternion.identity);
+            d.Setup(unitDamage);
+        }
+
+        if (Aliade.health <= 0)
+        {
+
+            if (deathEffect != null)
+            {
+                Instantiate(deathEffect, Aliade.transform.position, Quaternion.identity);
+                camAnim.SetTrigger("shake");
+            }
+
+            gm.ResetTiles(); // reset tiles when we die
+            gm.RemoveInfoPanel(this);
+            Destroy(Aliade.gameObject);
+        }
+
+        gm.UpdateInfoStats();
+        ResetWeaponIcon();
+    }
+
+    public void AttackAliade(Unit enemy) {
         hasAttacked = true;
 
-        int enemyDamege = attackDamage - enemy.armor;
-        int unitDamage = enemy.defenseDamage - armor;
+        Debug.Log("atacando");
 
-        if (enemyDamege >= 1)
+        //GetEnemies();
+
+        //foreach (Unit enemy in enemiesInRange)
+        //{
+        //int enemyDamege = attackDamage - enemy.armor;
+        int unitDamage = enemy.attackDamage - armor;
+
+        /*if (enemyDamege >= 1)
         {
             enemy.health -= enemyDamege;
             enemy.UpdateHealthDisplay();
             DamageIcon d = Instantiate(damageIcon, enemy.transform.position, Quaternion.identity);
             d.Setup(enemyDamege);
-        }
-
-        if (transform.tag == "Archer" && enemy.tag != "Archer")
+        }*/
+        if (unitDamage >= 1)
         {
-            if (Mathf.Abs(transform.position.x - enemy.transform.position.x) + Mathf.Abs(transform.position.y - enemy.transform.position.y) <= 1) // check is the enemy is near enough to attack
-            {
-                if (unitDamage >= 1)
-                {
-                    health -= unitDamage;
-                    UpdateHealthDisplay();
-                    DamageIcon d = Instantiate(damageIcon, transform.position, Quaternion.identity);
-                    d.Setup(unitDamage);
-                }
-            }
-        } else {
-            if (unitDamage >= 1)
-            {
-                health -= unitDamage;
-                UpdateHealthDisplay();
-                DamageIcon d = Instantiate(damageIcon, transform.position, Quaternion.identity);
-                d.Setup(unitDamage);
-            }
+            health -= unitDamage;
+            UpdateHealthDisplay();
+            DamageIcon d = Instantiate(damageIcon, transform.position, Quaternion.identity);
+            d.Setup(unitDamage);
         }
 
-        if (enemy.health <= 0)
+        /*if (enemy.health <= 0)
         {
          
             if (deathEffect != null){
@@ -326,7 +391,7 @@ public class Unit : MonoBehaviour
             GetWalkableTiles(); // check for new walkable tiles (if enemy has died we can now walk on his tile)
             gm.RemoveInfoPanel(enemy);
             Destroy(enemy.gameObject);
-        }
+        }*/
 
         if (health <= 0)
         {
@@ -337,17 +402,14 @@ public class Unit : MonoBehaviour
 				camAnim.SetTrigger("shake");
 			}
 
-			if (isKing)
-            {
-                gm.ShowVictoryPanel(playerNumber);
-            }
-
             gm.ResetTiles(); // reset tiles when we die
             gm.RemoveInfoPanel(this);
             Destroy(gameObject);
         }
 
         gm.UpdateInfoStats();
+        ResetWeaponIcon();
+        //}
     }
 
     public void ResetWeaponIcon() {
