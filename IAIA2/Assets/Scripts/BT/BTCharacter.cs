@@ -9,7 +9,7 @@ public class BTCharacter : MonoBehaviour
 {
     //Ahora mismo es una FSM, se puede adaptar para el BT 
 
-    public Mode mode = Mode.Defensa;
+    public Mode mode;
     GameObject enemyCloser;
     GameObject hootchCloser;
     PathfindingAStar pathfinding;
@@ -19,8 +19,9 @@ public class BTCharacter : MonoBehaviour
     Nodo nodoFinal;
     List<Nodo> path;
     public bool actionInitialized = false; 
-    float influenciaMin, abajo, derecha, arriba, izquierda;
+    //float influenciaMin, abajo, derecha, arriba, izquierda;
     public bool conquistarVilla;
+    public List<Unit> enemiesInRange = new List<Unit>();
     public bool atacar;
     public enum Percept
     {
@@ -48,7 +49,7 @@ public class BTCharacter : MonoBehaviour
     }
     private void Awake()
     {
-        grid = GameObject.Find("Map Generator").GetComponent<Grid>();
+        grid = GameObject.FindObjectOfType<Grid>();
         pathfinding = GameObject.FindObjectOfType<PathfindingAStar>();
     }
 
@@ -100,18 +101,34 @@ public class BTCharacter : MonoBehaviour
                     return true;
         return false;
     }
+
+
+
     private bool IsEnemyClose()
     {
         List<Tile> tiles = GetComponent<Unit>().GetTilesInRange();
-        
+        List<GameObject> unitsToPersecute = new List<GameObject>();
+
+        int numUnits = GameObject.Find("/Units").transform.childCount;
+
+        for (int i = 0; i < numUnits; i++)
+            if(GameObject.Find("/Units").transform.name.Contains("Aliado"))
+                unitsToPersecute.Add(GameObject.Find("/Units").transform.GetChild(i).gameObject);
+
         foreach (Tile tile in tiles)
-            foreach (GameObject unit in MapGenerator.unitsPlayer)
-                if (unit.transform.position.x == tile.transform.position.x &&
-                    tile.transform.position.y == unit.transform.position.y)
+        {
+            //Nodo test = GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(tile.transform.position);
+            foreach (GameObject unit in unitsToPersecute)
+            {
+                //Nodo nodoUnidad = GameObject.FinObjectOfType<Grid>().NodeFromWorldPosition(unit.transform.position);
+                if (Vector2.Distance(new Vector2(unit.transform.position.x, unit.transform.position.y), new Vector2(tile.transform.position.x, tile.transform.position.y)) < 1.1f)
                 {
-                    enemyCloser = unit;
+                    Debug.Log("enemigo cerca");
+                    enemyCloser = unit.transform.GetComponent<Unit>().gameObject;
                     return true;
                 }
+            }
+        }
 
         enemyCloser = null;
         return false;
@@ -131,7 +148,7 @@ public class BTCharacter : MonoBehaviour
 
         foreach (Tile tile in tiles)
             foreach (Nodo hootch in MapGenerator.hootchsNodes)
-                if (hootch.position.x == tile.transform.position.x && tile.transform.position.y == hootch.position.y)
+                if (Vector2.Distance(new Vector2(hootch.position.x, hootch.position.y), new Vector2(tile.transform.position.x, tile.transform.position.y)) < 1.1f)
                 {
                     List<GameObject> allHootchs = new List<GameObject>();
 
@@ -141,8 +158,10 @@ public class BTCharacter : MonoBehaviour
 
                     foreach (GameObject checkHootch in allHootchs)
                         if (hootch.position.x == checkHootch.transform.position.x && checkHootch.transform.position.y == hootch.position.y && !checkHootch.GetComponent<Village>().conqueredByIA)
+                        {
                             hootchCloser = checkHootch;
-                    return true;
+                            return true;
+                        }
                 }
         hootchCloser = null;
         return false;
@@ -186,6 +205,10 @@ public class BTCharacter : MonoBehaviour
                 //else if (percepts.Contains(Percept.WeakEnemy)){ //Modo Ataque}
                 //else { Modo Defensa }
             }
+            else
+            {
+                SetMode(Mode.Ataque);
+            }
         }
     }
 
@@ -199,6 +222,7 @@ public class BTCharacter : MonoBehaviour
         {
             if (percepts.Contains(Percept.EnemyClose))
             {
+                Debug.Log(name + " " + "ENEMIGO CERCA");
                 //Ir a la unidad enemiga con baja vida más cercana y atacar (mapa de infuencia) (variable closerenemy)
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
                 nodoFinal = grid.NodeFromWorldPosition(enemyCloser.transform.position);
@@ -208,15 +232,23 @@ public class BTCharacter : MonoBehaviour
             }
             else if (percepts.Contains(Percept.VilleRangeToConquer))
             {
+                Debug.Log(name + " " + "CONQUISTA");
                 //Ir a villa en rango no conquistada (hootchCloser) y conquistarla
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
+                Debug.Log(hootchCloser);
                 nodoFinal = grid.NodeFromWorldPosition(hootchCloser.transform.position);
 
-                pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                Nodo nodoDestino = GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(hootchCloser.transform.position);
+                nodoDestino.IsWall = false;
+                if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1.1f)
+                    pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                //pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                nodoDestino.IsWall = true;
                 conquistarVilla = true;
             }
             else //No hay villa ni enemigo cercano
             {
+                Debug.Log(name + " " + "AVANZA CASTILLO");
                 //Avanza sin mas si NO es un tanque
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
 
@@ -227,11 +259,18 @@ public class BTCharacter : MonoBehaviour
                 nodoInicio.IsWall = false;
                 //nodoInicio.tile.GetComponent<Tile>().unitInTile = null;
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-
+                /*if (!name.Contains("Tanque"))
+                {
+                    //nodoFinal = MapGenerator.nodoCastilloAliado;
+                    pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                }
+                else
+                    pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);*/
             }
         }
         else if (ActualMode == Mode.Defensa)
         {
+            Debug.Log("MODO DEFENSA");
             nodoInicio = grid.NodeFromWorldPosition(transform.position);
             nodoFinal = MapGenerator.nodoCastilloEnemigo;
 

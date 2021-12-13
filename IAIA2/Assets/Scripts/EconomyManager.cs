@@ -137,7 +137,7 @@ public class EconomyManager : MonoBehaviour
         {
             for (int i = 0; i < MapGenerator.unitsEnemy.Count; i++)
             {
-                Debug.Log(grid.NodeFromWorldPosition(MapGenerator.unitsEnemy[i].transform.position) == nodo);
+                //Debug.Log(grid.NodeFromWorldPosition(MapGenerator.unitsEnemy[i].transform.position) == nodo);
                 if (grid.NodeFromWorldPosition(MapGenerator.unitsEnemy[i].transform.position) == nodo)
                 {
 

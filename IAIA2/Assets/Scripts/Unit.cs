@@ -131,6 +131,11 @@ public class Unit : MonoBehaviour
         {
             if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !actionDone)
             {
+                //if (finalPath != null)
+                //    Debug.Log(name + " " + finalPath.Count);
+                //else
+                //    Debug.Log("FFFF");
+
                 if (finalPath != null && finalPath.Count > 0)
                 {
                     MoveThroughNodes(finalPath);    
@@ -180,8 +185,7 @@ public class Unit : MonoBehaviour
 
         if(gameObject.layer != 7 && name.Contains("Volador"))
         {
-
-            Debug.Log(count);
+//            Debug.Log(count);
         }
 
         if (gameObject.layer != 7 && finalPath != null && count < finalPath.Count)
@@ -554,6 +558,9 @@ public class Unit : MonoBehaviour
 
         if (finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo)
             finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
+
+        //if (finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloEnemigo)
+        //    finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
