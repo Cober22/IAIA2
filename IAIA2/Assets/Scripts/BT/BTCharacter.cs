@@ -231,8 +231,11 @@ public class BTCharacter : MonoBehaviour
         {
             nodoInicio = grid.NodeFromWorldPosition(transform.position);
             nodoFinal = MapGenerator.nodoCastilloEnemigo;
-            
-            pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+
+            if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1)
+                pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+            else // CODIGO DE ACCIÓN CUANDO EL TANQUE ESTA JUNTO AL CASTILLO
+                GetComponent<Unit>().actionDone = true;
         }
         actionInitialized = true;
     }    
