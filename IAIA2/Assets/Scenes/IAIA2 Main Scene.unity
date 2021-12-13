@@ -8810,7 +8810,7 @@ PrefabInstance:
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
       propertyPath: seed
-      value: 84585
+      value: 34836
       objectReference: {fileID: 0}
     - target: {fileID: 3909275788668362425, guid: d353bc3bf368eff4aad9a697c98e67a0,
         type: 3}
@@ -11000,7 +11000,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e12d55c9fd510429f8dac7d91313c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EM: {fileID: 1518080668}
   selectedUnit: {fileID: 0}
   playerTurn: 1
   selectedUnitSquare: {fileID: 1321401653}
@@ -11019,6 +11018,7 @@ MonoBehaviour:
   player2GoldText: {fileID: 993916837}
   createdUnit: {fileID: 0}
   createdVillage: {fileID: 0}
+  unitsIAonScene: []
   blueVictory: {fileID: 223296950}
   darkVictory: {fileID: 775957142}
 --- !u!82 &1518080665
@@ -11156,7 +11156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b7cec0fd3d369a419adc479a5de8571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gm: {fileID: 1518080664}
 --- !u!1 &1527083049
 GameObject:
   m_ObjectHideFlags: 0

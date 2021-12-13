@@ -208,7 +208,7 @@ public class GM : MonoBehaviour
                 unit.GetComponent<Unit>().pathfindingDoneThisTurn = false;
                 unit.GetComponent<Unit>().stepsTaken = 0;
                 unit.GetComponent<Unit>().count = 0;
-                unit.GetComponent<Unit>().finalPath = null;
+                //unit.GetComponent<Unit>().finalPath = null;
                 unit.GetComponent<BTCharacter>().actionInitialized = false;
                 unitElement = 0;
             }
@@ -233,6 +233,9 @@ public class GM : MonoBehaviour
                 GameObject.Find("Map Generator").GetComponent<Grid>().grid[x, /*influenceMap.GetLength(1) - 1 -*/ y].influencia = influenceMap[x, y];
 
         Nodo[,] grid = GameObject.Find("Map Generator").GetComponent<Grid>().grid;
+
+        foreach (Unit unit in units)
+            unit.GetComponent<Unit>().hasAttacked = false;
     }
 
     void GetGoldIncome(int playerTurn) {

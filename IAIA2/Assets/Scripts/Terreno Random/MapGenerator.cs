@@ -110,7 +110,8 @@ public class MapGenerator : MonoBehaviour {
 
         while (units.transform.childCount < 6)
         {
-            Debug.Log("Generate");
+            for (int i = 0; i < GameObject.Find("/Units").transform.childCount; i++)
+                Destroy(GameObject.Find("Units").transform.GetChild(i).gameObject);
             GenerateMap();
         }
 
@@ -168,11 +169,13 @@ public class MapGenerator : MonoBehaviour {
         int posX = Random.Range(0, marginX);
         int posY = Random.Range(0, mapHeight - marginY);
         nodoCastilloAliado = grid[posX, posY];
+        //grid[posX, posY].IsWall = true;
         castilloAliado.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
 
         posX = mapWidth - 1 - posX;
         posY = mapHeight - 1 - marginY - posY;
         nodoCastilloEnemigo = grid[posX, posY];
+        //grid[posX, posY].IsWall = true;
         castilloEnemigo.transform.position = new Vector3(grid[posX, posY].position.x, grid[posX, posY].position.y, 1f);
 
         Vector3 positionNewUnit;
@@ -424,11 +427,7 @@ public class MapGenerator : MonoBehaviour {
             renderSprite.sprite = regions[index].sprite;
             renderSprite.transform.position = new Vector3(element.position.x, element.position.y, 0f);
             renderSprite.transform.localScale = element.tile.transform.localScale;
-
         }
-
-
-
     }
 
     private void RestoreMap()

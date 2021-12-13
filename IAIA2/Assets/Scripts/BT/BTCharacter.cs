@@ -21,6 +21,7 @@ public class BTCharacter : MonoBehaviour
     public bool actionInitialized = false; 
     float influenciaMin, abajo, derecha, arriba, izquierda;
     public bool conquistarVilla;
+    public bool atacar;
     public enum Percept
     {
         UnitMoneySupply, //Dinero >= 20 para alimentar a la unidad
@@ -150,6 +151,7 @@ public class BTCharacter : MonoBehaviour
 
     public void Analysis()
     {
+        atacar = false;
         conquistarVilla = false;
         var percepts = GetPerceptsAnalysis();
         if (percepts.Contains(Percept.Dead))
@@ -166,7 +168,7 @@ public class BTCharacter : MonoBehaviour
             }
             if (percepts.Contains(Percept.CastleUnderAttack))
             {
-                Debug.Log("ENTRAAAAA");
+                //Debug.Log("ENTRAAAAA");
 
                 //Va al castillo
                 SetMode(Mode.Defensa);
@@ -202,7 +204,7 @@ public class BTCharacter : MonoBehaviour
                 nodoFinal = grid.NodeFromWorldPosition(enemyCloser.transform.position);
 
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-
+                atacar = true;
             }
             else if (percepts.Contains(Percept.VilleRangeToConquer))
             {
@@ -222,7 +224,8 @@ public class BTCharacter : MonoBehaviour
 
                 int posFinal = UnityEngine.Random.Range(0, pathNodesAvailable.Count);
                 nodoFinal = grid.NodeFromWorldPosition(pathNodesAvailable[posFinal].position);
-
+                nodoInicio.IsWall = false;
+                //nodoInicio.tile.GetComponent<Tile>().unitInTile = null;
                 pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
 
             }
@@ -231,8 +234,13 @@ public class BTCharacter : MonoBehaviour
         {
             nodoInicio = grid.NodeFromWorldPosition(transform.position);
             nodoFinal = MapGenerator.nodoCastilloEnemigo;
-            
-            pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+
+            if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1)
+                pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+            else { // CODIGO DE ACCIÓN CUANDO EL TANQUE ESTA JUNTO AL CASTILLO
+                GetComponent<Unit>().finalPath = null;
+                GetComponent<Unit>().actionDone = true;
+            }
         }
         actionInitialized = true;
     }    

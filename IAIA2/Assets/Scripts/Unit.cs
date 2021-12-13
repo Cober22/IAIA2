@@ -128,19 +128,69 @@ public class Unit : MonoBehaviour
     {        
         // UNA ACCION POR TURNO
         if (gameObject.layer == 7)
+        {
             if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !actionDone)
             {
                 if (finalPath != null && finalPath.Count > 0)
+                {
                     MoveThroughNodes(finalPath);    
-
-                if(finalPath != null && finalPath.Count > 0)
                     if (stepsTaken >= maxSteps)
                     {
                         actionDone = true;
                         Nodo nodo = GameObject.Find("/Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
                         nodo.IsWall = true;
+                        finalPath = null;
                     }
+                    //nodo.tile.GetComponent<Tile>().unitInTile = transform.gameObject;
+                }
+                //Debug.Log(name + " " + actionDone);
             }
+
+            Grid grid = GameObject.Find("Map Generator").GetComponent<Grid>();
+            List<Nodo> vecinos = grid.GetNeighbouringNodes(grid.NodeFromWorldPosition(this.transform.position));
+            Unit[] units = FindObjectsOfType<Unit>();
+            GM gm = FindObjectOfType<GM>();
+
+            foreach (Unit unit in units)
+            {
+                foreach (Nodo vecino in vecinos)
+                {
+                    if (grid.NodeFromWorldPosition(unit.position) == vecino && unit.gameObject.layer != 7 && Input.GetKeyDown(KeyCode.A) && !hasAttacked && gm.playerTurn != 1)
+                    {
+                        AttackAliade(unit);
+                    }
+                }
+            }
+
+            if (this.gameObject.GetComponent<BTCharacter>().atacar)
+            {
+                foreach (Unit unit in units)
+                {
+                    foreach (Nodo vecino in vecinos)
+                    {
+                        //Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
+                        if (grid.NodeFromWorldPosition(unit.position) == vecino && unit.gameObject.layer != 7 && !unit.hasAttacked && gm.playerTurn == 1)
+                        {
+                            AttackEnemie(unit);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(gameObject.layer != 7 && name.Contains("Volador"))
+        {
+
+            Debug.Log(count);
+        }
+
+        if (gameObject.layer != 7 && finalPath != null && count < finalPath.Count)
+            MoveThroughNodes(finalPath);
+        else if (gameObject.layer != 7 && finalPath != null)
+        {
+            finalPath = null;
+            count = 0;
+        }
 
         position = this.transform.position;
     }
@@ -148,9 +198,7 @@ public class Unit : MonoBehaviour
     private void UpdateHealthDisplay ()
     {
         if (isKing)
-        {
             displayedText.text = health.ToString();
-        }
     }
 
     private void OnMouseDown() // select character or deselect if already selected
@@ -185,28 +233,26 @@ public class Unit : MonoBehaviour
                 }
             }
 
-            Collider2D col = Physics2D.OverlapCircle(Camera.main.ScreenToWorldPoint(Input.mousePosition), 0.15f);
-            if (col != null)
-            {
-                Unit unit = col.GetComponent<Unit>(); // double check that what we clicked on is a unit
-                if (unit != null && gm.selectedUnit != null)
-                {
-                    if (gm.selectedUnit.enemiesInRange.Contains(unit) && !gm.selectedUnit.hasAttacked)
-                    { // does the currently selected unit have in his list the enemy we just clicked on
-                        gm.selectedUnit.Attack(unit);
+            //Collider2D col = Physics2D.OverlapCircle(Camera.main.ScreenToWorldPoint(Input.mousePosition), 0.15f);
+            //if (col != null)
+            //{
+            //    Unit unit = col.GetComponent<Unit>(); // double check that what we clicked on is a unit
+            //    if (unit != null && gm.selectedUnit != null)
+            //    {
+            //        if (gm.selectedUnit.enemiesInRange.Contains(unit) && !gm.selectedUnit.hasAttacked)
+            //        { // does the currently selected unit have in his list the enemy we just clicked on
+            //            gm.selectedUnit.Attack(unit);
 
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
         }
     }
 
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1))
-        {
             gm.UpdateInfoPanel(this);
-        }
     }
 
     void GetWalkableTiles() { // Looks for the tiles the unit can walk on
@@ -257,7 +303,6 @@ public class Unit : MonoBehaviour
                     enemiesInRange.Add(enemy);
                     enemy.weaponIcon.SetActive(true);
                 }
-
             }
         }
     }
@@ -271,7 +316,10 @@ public class Unit : MonoBehaviour
 
         pathfinding.PathfindingPlayer(nodoInicial, nodoFinal, ref finalPath);
 
-        StartCoroutine(StartMovement(movePos));
+        //hasMoved = true;
+        //ResetWeaponIcon();
+        //GetEnemies();
+        //gm.MoveInfoPanel(this);
     }
 
     void Attack(Unit enemy) {
@@ -357,23 +405,104 @@ public class Unit : MonoBehaviour
             enemy.weaponIcon.SetActive(false);
         }
     }
+    
+    public void AttackEnemie(Unit Aliade)
+    {
+        Aliade.hasAttacked = true;
 
-    IEnumerator StartMovement(Transform movePos) { // Moves the character to his new position.
+        //DDebug.Log("atacando");
 
-        while (transform.position.x != movePos.position.x) { // first aligns him with the new tile's x pos
-            transform.position = Vector2.MoveTowards(transform.position, new Vector2(movePos.position.x, transform.position.y), moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-        while (transform.position.y != movePos.position.y) // then y
+        int unitDamage = attackDamage - Aliade.armor;
+
+        if (unitDamage >= 1)
         {
-            transform.position = Vector2.MoveTowards(transform.position, new Vector2(transform.position.x, movePos.position.y), moveSpeed * Time.deltaTime);
-            yield return null;
+            Aliade.health -= unitDamage;
+            UpdateHealthDisplay();
+            DamageIcon d = Instantiate(damageIcon, transform.position, Quaternion.identity);
+            d.Setup(unitDamage);
         }
 
-        hasMoved = true;
+        if (Aliade.health <= 0)
+        {
+
+            if (deathEffect != null)
+            {
+                Instantiate(deathEffect, Aliade.transform.position, Quaternion.identity);
+                camAnim.SetTrigger("shake");
+            }
+
+            gm.ResetTiles(); // reset tiles when we die
+            gm.RemoveInfoPanel(this);
+            Destroy(Aliade.gameObject);
+        }
+
+        gm.UpdateInfoStats();
         ResetWeaponIcon();
-        GetEnemies();
-        gm.MoveInfoPanel(this);
+    }
+
+    public void AttackAliade(Unit enemy)
+    {
+        hasAttacked = true;
+
+        //Debug.Log("atacando");
+
+        //GetEnemies();
+
+        //foreach (Unit enemy in enemiesInRange)
+        //{
+        //int enemyDamege = attackDamage - enemy.armor;
+        int unitDamage = enemy.attackDamage - armor;
+
+        /*if (enemyDamege >= 1)
+        {
+            enemy.health -= enemyDamege;
+            enemy.UpdateHealthDisplay();
+            DamageIcon d = Instantiate(damageIcon, enemy.transform.position, Quaternion.identity);
+            d.Setup(enemyDamege);
+        }*/
+        if (unitDamage >= 1)
+        {
+            health -= unitDamage;
+            UpdateHealthDisplay();
+            DamageIcon d = Instantiate(damageIcon, transform.position, Quaternion.identity);
+            d.Setup(unitDamage);
+        }
+
+        /*if (enemy.health <= 0)
+        {
+         
+            if (deathEffect != null){
+				Instantiate(deathEffect, enemy.transform.position, Quaternion.identity);
+				camAnim.SetTrigger("shake");
+			}
+
+            if (enemy.isKing)
+            {
+                gm.ShowVictoryPanel(enemy.playerNumber);
+            }
+
+            GetWalkableTiles(); // check for new walkable tiles (if enemy has died we can now walk on his tile)
+            gm.RemoveInfoPanel(enemy);
+            Destroy(enemy.gameObject);
+        }*/
+
+        if (health <= 0)
+        {
+
+            if (deathEffect != null)
+            {
+                Instantiate(deathEffect, enemy.transform.position, Quaternion.identity);
+                camAnim.SetTrigger("shake");
+            }
+
+            gm.ResetTiles(); // reset tiles when we die
+            gm.RemoveInfoPanel(this);
+            Destroy(gameObject);
+        }
+
+        gm.UpdateInfoStats();
+        ResetWeaponIcon();
+        //}
     }
 
     private void OnDrawGizmos()
@@ -385,72 +514,46 @@ public class Unit : MonoBehaviour
             if (this.name.Contains("Guerrero"))
             {
                 if (this.name.Contains("Aliado"))
-                {
                     color = Color.red;
-                }
                 else
-                {
                     color = Color.blue;
-                }
             }
             else if (this.name.Contains("Tanque"))
-            {
                 if (this.name.Contains("Aliado"))
-                {
                     color = Color.gray;
-                }
                 else
-                {
                     color = Color.yellow;
-                }
-            }
             else if (this.name.Contains("Volador"))
             {
                 if (this.name.Contains("Aliado"))
-                {
                     color = Color.cyan;
-                }
                 else
-                {
                     color = Color.magenta;
-                }
             }
-
 
             Gizmos.color = color;
             foreach (Nodo nodo in finalPath)
-            {
                 Gizmos.DrawCube(nodo.position, Vector3.one * 0.35f);
-            }
         }
     }
 
-    //La version del John Limones
-    /*void MoveThroughNodes(List<Nodo> path)
-    {
-        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
-
-        if (distanceToNextNode < 0.2f)
-            count++;
-        if (count >= (path.Count - 1))
-            count = 0;
-
-        // El NPC se girara para mirar siempre hacia su objetivo
-        //transform.LookAt(path[count].position);
-
-        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime);
-    }*/
-
     private void MoveThroughNodes(List<Nodo> path)
     {
-        //si en el camino el último nodo es el castillo, lo quitamos de las listas del camino
-        if (count == 0 && finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo)
-        {
+        //si en el camino el último nodo es el castillo o algun aliado (muro), lo quitamos de las listas del camino
+        //int i = finalPath.Count - 1;
+        //Debug.Log(i);
+        //Debug.Log(finalPath.Count);
+        //Debug.Log(finalPath[i].IsWall);
+        //while (i > 0 && finalPath.Count > 0 && finalPath[i].IsWall)
+        //{
+        //    Debug.Log(finalPath[finalPath.Count - 1]);
+        //    finalPath.Remove(finalPath[i]);
+        //    Debug.Log(finalPath[finalPath.Count - 1]);
+        //    i--;
+        //}
+
+        if (finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo)
             finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
-            path.Remove(MapGenerator.nodoCastilloEnemigo);
-        }
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
@@ -470,23 +573,5 @@ public class Unit : MonoBehaviour
             nodo.IsWall = true;
             actionDone = true;
         }
-
-        //ESTO LUEGO HAY QUE QUITARLO, CUANDO EL BT ESTÉ FINO FINO
-        if (count == finalPath.Count)
-        {
-            bool aliado = this.name.Contains("Aliado");
-
-            if (this.name.Contains("Tanque"))
-            {
-                if (aliado)
-                {
-                    influenceValue = 15f;
-                    maxSteps = 3;
-                }
-                else
-                    GetComponent<BTCharacter>().mode = BTCharacter.Mode.Ataque;
-            }
-        }
-
     }
 }
