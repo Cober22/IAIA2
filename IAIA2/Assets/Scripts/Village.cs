@@ -47,7 +47,7 @@ public class Village : MonoBehaviour
                         conqueredByIA = true;
                         conqueredByPlayer = false;
                     }
-                    else if (unit.gameObject.layer != 7 && Input.GetKeyDown(KeyCode.E))
+                    else if (Input.GetKeyDown(KeyCode.E))
                     {
                         conqueredByIA = false;
                         conqueredByPlayer = true;

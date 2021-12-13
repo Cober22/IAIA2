@@ -600,7 +600,6 @@ MonoBehaviour:
   count: 0
   stepsTaken: 0
   actionDone: 0
-  position: {x: 0, y: 0, z: 0}
 --- !u!61 &3293640991218369721
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -652,9 +651,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096a0bd9c72c974479d0ee1e35b4392f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 1
   actionInitialized: 0
-  conquistarVilla: 0
 --- !u!1 &3293640991254917044
 GameObject:
   m_ObjectHideFlags: 0
