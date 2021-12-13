@@ -83,8 +83,8 @@ public class GM : MonoBehaviour
             if (playerTurn == 2)
             {
                 EndTurn();
-                //player1Gold -= EM.FeedUnits(MapGenerator.unitsEnemy, player1Gold);
-                //UpdateGoldText(); 
+                player1Gold -= GetComponent<EconomyManager>().FeedUnits(MapGenerator.unitsEnemy, player1Gold);
+                UpdateGoldText(); 
             }
 
         if (selectedUnit != null) // moves the white square to the selected unit!

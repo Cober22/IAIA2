@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class EconomyManager : MonoBehaviour
 {
-    //public GM gm;
     public Grid grid;
+    public MapGenerator mapGenerator;
+    public GM gm;
+    private int totalFeedingCost;
 
     private void Update()
     {
-        //PurchasePhase();
-        SeeForUnitInCastle();
+        if (MapGenerator.unitsEnemy.Count < 6 && gm.playerTurn == 1)
+        {
+            PurchasePhase();
+        }
     }
 
-    public void GiveMoneyForUnit(Unit unit) //dada la unidad a la que ha matado
+    public static void GiveMoneyForUnit(Unit unit) //dada la unidad a la que ha matado
     {
         int money = 0;
 
@@ -33,7 +37,7 @@ public class EconomyManager : MonoBehaviour
             money += 25;
         }
 
-        if (GameObject.Find("Map Generator").GetComponent<GM>().playerTurn == 1) //turno enemigo (1)
+        if (GameObject.FindObjectOfType<GM>().playerTurn == 1) //turno enemigo (1)
         {
             GM.player1Gold += money;
         }
@@ -43,7 +47,7 @@ public class EconomyManager : MonoBehaviour
         }
 
         //actualizamos la cantidad de oro de ambos jugadores
-        GameObject.Find("Map Generator").GetComponent<GM>().UpdateGoldText();
+        GameObject.FindObjectOfType<GM>().UpdateGoldText();
     }
 
     public int FeedUnits(List<GameObject> units, int gold) //dada una lista con las distintas unidades, aliadas o enemigas y el monedero correspondiente
@@ -67,8 +71,11 @@ public class EconomyManager : MonoBehaviour
 
         foreach (GameObject unit in unitsToEliminate)
         {
-            units.Remove(unit);
-            Destroy(unit);
+            if (gm.playerTurn == 2)
+            {
+                MapGenerator.unitsPlayer.Remove(unit);
+                Destroy(unit);
+            }
         }
 
         return necessaryMoney;
@@ -76,84 +83,171 @@ public class EconomyManager : MonoBehaviour
 
     private void PurchasePhase()
     {
-
-        int tank = 0;
-        int flying = 0;
-        int warrior = 0;
-
-        int totalFeedingCost = 0;
-
-        //identificamos cuantas unidades de cada tipo tiene la IA
-        for (int i = 0; i < MapGenerator.unitsEnemy.Count; i++)
+        //si hay algún nodo libre alrrededor del castillo entonces comienza la fase de compra
+        if (ClearNodeForUnits())
         {
-            if (MapGenerator.unitsEnemy[i].name.Contains("Tanque"))
+            int tanks = 0;
+            int dragons = 0;
+            int warriors = 0;
+
+            totalFeedingCost = 0;
+
+            int necessaryTanks = tanks;
+            int necessaryDragons = dragons;
+            int necessaryWarriors = warriors;
+
+            //identificamos cuantas unidades de cada tipo tiene la IA
+            for (int i = 0; i < MapGenerator.unitsEnemy.Count; i++)
             {
-                tank++;
-            }
-            else if (MapGenerator.unitsEnemy[i].name.Contains("Guerrero"))
-            {
-                warrior++;
-            }
-            else
-            {
-                flying++;
+                if (MapGenerator.unitsEnemy[i].name.Contains("Tanque"))
+                {
+                    tanks++;
+                }
+                else if (MapGenerator.unitsEnemy[i].name.Contains("Guerrero"))
+                {
+                    warriors++;
+                }
+                else
+                {
+                    dragons++;
+                }
+
+                totalFeedingCost += MapGenerator.unitsEnemy[i].gameObject.transform.GetComponent<Unit>().feedingCost;
+
             }
 
-            totalFeedingCost += MapGenerator.unitsEnemy[i].gameObject.transform.GetComponent<Unit>().feedingCost;
+            if (tanks < 2)
+            {
+                //si podemos asumir el gasto y además tenemos dinero suficiente como para mantener a las unidades por otros 4 turnos
+                if (canBuyTank())
+                {
+                    GM.player1Gold -= 50;
+                    GameObject.FindObjectOfType<GM>().UpdateGoldText();
+
+                    Nodo position = TakeNodoForUnit();
+
+                    BuyEnemyUnit("Tanque Enemigo", position);
+                }
+            }
+            //si tiene dos tanques, priorizará la obtención de voladores, estás rotisimos
+            else if (canBuyDragon())
+            {
+                GM.player1Gold -= 80;
+                GameObject.FindObjectOfType<GM>().UpdateGoldText();
+
+                Nodo position = TakeNodoForUnit();
+
+                BuyEnemyUnit("Volador Enemigo", position);
+            }
+            else //valoraremos si debe comprar un warrior, son manquisimos, si no, que se ahorre el dinero
+            {
+                if (canBuyWarrior())
+                {
+                    //si está en un momento crítico, tiene menos de 3 unidades
+                    if (MapGenerator.unitsEnemy.Count < 3)
+                    {
+                        GM.player1Gold -= 40;
+                        GameObject.FindObjectOfType<GM>().UpdateGoldText();
+
+                        Nodo position = TakeNodoForUnit();
+
+                        BuyEnemyUnit("Guerrero Enemigo", position);
+                    }
+                }
+            }
 
         }
-
-        if (flying == 0)
-        {
-            //si podemos asumir el gasto y además tenemos dinero suficiente como para mantener a las unidades por otros 4 turnos
-            if (GM.player1Gold - 80 >= totalFeedingCost*4 + 5) //el coste total de manutención más el coste de manutención de la nueva unidad a comprar
-            {
-
-            }
-        }
-        else if(tank == 0)
-        {
-
-        }
-        //else if(warrior == 0) //peor unidad, no me interesa comprarla a no ser que esté en una situación crítica
-        //{
-
-        //}
+        else
+            return;
     }
 
-    //private string WhatUnit(int count)
-    //{
-
-    //}
-
-    private void SeeForUnitInCastle()
+    private bool canBuyTank()
     {
+        //el coste total de manutención más el coste de manutención de la nueva unidad a comprar
+        return GM.player1Gold - 50 >= totalFeedingCost * 2 + 3;
+    }
+
+    private bool canBuyDragon()
+    {
+        //el coste total de manutención más el coste de manutención de la nueva unidad a comprar
+        return GM.player1Gold - 80 >= totalFeedingCost * 2 + 5;
+    }
+
+    private bool canBuyWarrior()
+    {
+        //el coste total de manutención más el coste de manutención de la nueva unidad a comprar
+        return GM.player1Gold - 40 >= totalFeedingCost * 2 + 2;
+    }
+
+    private void BuyEnemyUnit(string type, Nodo nodo)
+    {
+        foreach (UnitType unit in mapGenerator.unitsCollection)
+        {
+            if (!unit.aliado && unit.name.Contains(type))
+            {
+                GameObject nuevaUnidad = Instantiate(unit.unit);
+                nuevaUnidad.transform.position = nodo.position;
+                nuevaUnidad.transform.SetParent(GameObject.Find("/Units").transform);
+
+                MapGenerator.unitsEnemy.Add(nuevaUnidad);
+                GameObject.FindObjectOfType<GM>().unitsIAonScene.Add(nuevaUnidad);
+
+                break;
+            }
+        }
+    }
+
+    private Nodo TakeNodoForUnit()
+    {
+        Nodo newUnitPosition;
+
         List<Nodo> vecinos;
 
         vecinos = GameObject.Find("Map Generator").GetComponent<Grid>().GetAllNeighbouringNodes(MapGenerator.nodoCastilloEnemigo);
 
-        //para cada unidad enemiga vamos a comprobar si está cerca del castillo
         foreach (Nodo nodo in vecinos)
         {
-            for (int i = 0; i < MapGenerator.unitsEnemy.Count; i++)
-            {
-                //Debug.Log(grid.NodeFromWorldPosition(MapGenerator.unitsEnemy[i].transform.position) == nodo);
-                if (grid.NodeFromWorldPosition(MapGenerator.unitsEnemy[i].transform.position) == nodo)
-                {
+            bool goodNode = true;
 
+            for (int i = 0; i < GameObject.Find("/Units").transform.childCount; i++)
+            {
+                if (grid.NodeFromWorldPosition(GameObject.Find("/Units").transform.GetChild(i).transform.position) == nodo)
+                {
+                    goodNode = false;
+                }
+            }
+
+            if (goodNode)
+            {
+                newUnitPosition = nodo;
+                return newUnitPosition;
+            }
+        }
+
+        return null;
+    }
+
+    private bool ClearNodeForUnits()
+    {
+        bool canSpawn = true;
+
+        List<Nodo> vecinos;
+
+        vecinos = GameObject.Find("Map Generator").GetComponent<Grid>().GetAllNeighbouringNodes(MapGenerator.nodoCastilloEnemigo);
+
+        foreach (Nodo nodo in vecinos)
+        {
+            canSpawn = true;
+
+            for (int i = 0; i < GameObject.Find("/Units").transform.childCount; i++)
+            {
+                if (grid.NodeFromWorldPosition(GameObject.Find("/Units").transform.GetChild(i).transform.position) == nodo)
+                {
+                    canSpawn = false;
                 }
             }
         }
+
+        return canSpawn;
     }
-
-    //private bool UnitInADeterminateTile(Nodo nodo, Unit unit)
-    //{
-    //    if (nodo.tile.GetComponent<Tile>().
-
-    //    {
-
-    //    }
-
-    //    return true;
-    //}
 }

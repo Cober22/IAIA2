@@ -501,6 +501,10 @@ public class Unit : MonoBehaviour
 
             gm.ResetTiles(); // reset tiles when we die
             gm.RemoveInfoPanel(this);
+
+            MapGenerator.unitsEnemy.Remove(gameObject);
+            gm.unitsIAonScene.Remove(gameObject);
+
             Destroy(gameObject);
         }
 

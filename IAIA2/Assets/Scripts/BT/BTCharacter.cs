@@ -177,6 +177,10 @@ public class BTCharacter : MonoBehaviour
         {
             if (GameObject.FindObjectOfType<GM>().unitsIAonScene.Count > 0)
                 GameObject.FindObjectOfType<GM>().unitsIAonScene.Remove(gameObject);
+
+            MapGenerator.unitsEnemy.Remove(gameObject);
+            Debug.Log(MapGenerator.unitsEnemy.Count);
+
             Destroy(gameObject);
         } else
         {
