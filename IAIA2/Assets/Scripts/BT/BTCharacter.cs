@@ -191,7 +191,7 @@ public class BTCharacter : MonoBehaviour
             }
             if(percepts.Contains(Percept.EnemyClose))
             {
-                if (this.name.Contains("Guerrero"))
+                if (this.name.Contains("Guerrero") || this.name.Contains("Volador"))
                     SetMode(Mode.Ataque);
                 else if (percepts.Contains(Percept.WeakEnemy))
                     SetMode(Mode.Ataque);
