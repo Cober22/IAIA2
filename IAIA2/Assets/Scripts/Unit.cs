@@ -132,10 +132,13 @@ public class Unit : MonoBehaviour
             if (GameObject.FindObjectOfType<GM>().playerTurn == 1 && !actionDone)
             {
                 if (finalPath != null && finalPath.Count > 0)
+<<<<<<< HEAD
                     MoveThroughNodes(finalPath);
+=======
                 {
                     MoveThroughNodes(finalPath);    
                 }
+>>>>>>> e7b7dd56e3259f429b39e91e22022bcf43aea075
 
                 if (finalPath != null && finalPath.Count > 0)
                     if (stepsTaken >= maxSteps)
