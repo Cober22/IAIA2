@@ -485,7 +485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: 
-  feedingCost: 4
+  feedingCost: 5
   isSelected: 0
   hasMoved: 0
   tileSpeed: 6

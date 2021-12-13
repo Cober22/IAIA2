@@ -3064,9 +3064,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: '40
-
-'
+  m_Text: 50
 --- !u!222 &796336068
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11156,6 +11154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b7cec0fd3d369a419adc479a5de8571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grid: {fileID: 1817466755}
 --- !u!1 &1527083049
 GameObject:
   m_ObjectHideFlags: 0
@@ -12267,7 +12266,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 70
+  m_Text: 40
 --- !u!222 &2049192314
 CanvasRenderer:
   m_ObjectHideFlags: 0

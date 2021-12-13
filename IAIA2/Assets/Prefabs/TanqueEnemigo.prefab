@@ -512,7 +512,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: 
-  feedingCost: 2
+  feedingCost: 3
   isSelected: 0
   hasMoved: 0
   tileSpeed: 3
@@ -530,7 +530,7 @@ MonoBehaviour:
   armor: 1
   damageIcon: {fileID: -5891122600849735030, guid: eb780ffd3e6d6b64d993bc8583781d30,
     type: 3}
-  cost: 40
+  cost: 50
   deathEffect: {fileID: 8882834092664154197, guid: 43e58a09770a414488a4edf9a2bb5ea7,
     type: 3}
   isKing: 0
@@ -539,6 +539,7 @@ MonoBehaviour:
   count: 0
   stepsTaken: 0
   actionDone: 0
+  position: {x: 0, y: 0, z: 0}
 --- !u!114 &1771498148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,7 +565,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096a0bd9c72c974479d0ee1e35b4392f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mode: 1
   actionInitialized: 0
+  conquistarVilla: 0
+  atacar: 0
 --- !u!82 &1562438027
 AudioSource:
   m_ObjectHideFlags: 0

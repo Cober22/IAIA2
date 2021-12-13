@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: 
-  feedingCost: 4
+  feedingCost: 5
   isSelected: 0
   hasMoved: 0
   tileSpeed: 6
@@ -181,6 +181,7 @@ MonoBehaviour:
   count: 0
   stepsTaken: 0
   actionDone: 0
+  position: {x: 0, y: 0, z: 0}
 --- !u!61 &1642533359335901399
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -232,7 +233,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096a0bd9c72c974479d0ee1e35b4392f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mode: 1
   actionInitialized: 0
+  conquistarVilla: 0
+  atacar: 0
 --- !u!82 &2057758935
 AudioSource:
   m_ObjectHideFlags: 0

@@ -654,7 +654,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: 
-  feedingCost: 3
+  feedingCost: 2
   isSelected: 0
   hasMoved: 0
   tileSpeed: 4
@@ -672,7 +672,7 @@ MonoBehaviour:
   armor: 1
   damageIcon: {fileID: -5891122600849735030, guid: eb780ffd3e6d6b64d993bc8583781d30,
     type: 3}
-  cost: 70
+  cost: 40
   deathEffect: {fileID: 8882834092664154197, guid: 43e58a09770a414488a4edf9a2bb5ea7,
     type: 3}
   isKing: 0
