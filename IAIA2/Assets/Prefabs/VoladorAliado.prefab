@@ -496,11 +496,11 @@ MonoBehaviour:
   enemiesInRange: []
   playerNumber: 2
   weaponIcon: {fileID: 3831706680235958397}
-  health: 7
+  health: 2
   healthTotal: 0
-  attackDamage: 4
-  defenseDamage: 3
-  armor: 2
+  attackDamage: 6
+  defenseDamage: 1
+  armor: 1
   damageIcon: {fileID: -5891122600849735030, guid: eb780ffd3e6d6b64d993bc8583781d30,
     type: 3}
   cost: 80

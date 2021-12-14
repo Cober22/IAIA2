@@ -165,11 +165,11 @@ MonoBehaviour:
   enemiesInRange: []
   playerNumber: 1
   weaponIcon: {fileID: 1642533359395298479}
-  health: 7
+  health: 2
   healthTotal: 0
-  attackDamage: 4
-  defenseDamage: 3
-  armor: 2
+  attackDamage: 6
+  defenseDamage: 1
+  armor: 1
   damageIcon: {fileID: -5891122600849735030, guid: eb780ffd3e6d6b64d993bc8583781d30,
     type: 3}
   cost: 80
@@ -236,6 +236,7 @@ MonoBehaviour:
   mode: 1
   actionInitialized: 0
   conquistarVilla: 0
+  enemiesInRange: []
   atacar: 0
 --- !u!82 &2057758935
 AudioSource:

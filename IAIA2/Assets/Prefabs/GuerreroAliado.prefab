@@ -665,9 +665,9 @@ MonoBehaviour:
   enemiesInRange: []
   playerNumber: 2
   weaponIcon: {fileID: 626269173125141466}
-  health: 4
+  health: 5
   healthTotal: 0
-  attackDamage: 4
+  attackDamage: 3
   defenseDamage: 2
   armor: 1
   damageIcon: {fileID: -5891122600849735030, guid: eb780ffd3e6d6b64d993bc8583781d30,
