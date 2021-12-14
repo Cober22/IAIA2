@@ -60,14 +60,17 @@ public class EconomyManager : MonoBehaviour
 
         foreach (GameObject unit in units)
         {
-            if (wallet - unit.transform.GetComponent<Unit>().feedingCost < 0)
+            if (unit != null)
             {
-                unitsToEliminate.Add(unit);
-            }
-            else
-            {
-                necessaryMoney += unit.transform.GetComponent<Unit>().feedingCost;
-                wallet -= unit.transform.GetComponent<Unit>().feedingCost;
+                if (wallet - unit.transform.GetComponent<Unit>().feedingCost < 0)
+                {
+                    unitsToEliminate.Add(unit);
+                }
+                else
+                {
+                    necessaryMoney += unit.transform.GetComponent<Unit>().feedingCost;
+                    wallet -= unit.transform.GetComponent<Unit>().feedingCost;
+                }
             }
         }
 

@@ -96,24 +96,58 @@ public class BTCharacter : MonoBehaviour
         List<Nodo> adyacenteCastillo = grid.GetNeighbouringNodes(MapGenerator.nodoCastilloEnemigo);
 
         foreach (Nodo adyacente in adyacenteCastillo)
-            foreach(GameObject unidad in MapGenerator.unitsPlayer)
-                if (adyacente == grid.NodeFromWorldPosition(unidad.transform.position))
+            foreach (GameObject unidad in MapGenerator.unitsPlayer)
+                if (unidad != null && adyacente == grid.NodeFromWorldPosition(unidad.transform.position))
                     return true;
         return false;
     }
 
 
 
+    //private bool IsEnemyClose()
+    //{
+    //    List<Tile> tiles = GetComponent<Unit>().GetTilesInRange();
+    //    List<GameObject> unitsToPersecute = new List<GameObject>();
+
+    //    int numUnits = GameObject.Find("/Units").transform.childCount;
+
+    //    for (int i = 0; i < numUnits; i++)
+    //        if(GameObject.Find("/Units").transform.name.Contains("Aliado"))
+    //            unitsToPersecute.Add(GameObject.Find("/Units").transform.GetChild(i).gameObject);
+
+    //    foreach (Tile tile in tiles)
+    //    {
+    //        //Nodo test = GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(tile.transform.position);
+    //        foreach (GameObject unit in unitsToPersecute)
+    //        {
+    //            //Nodo nodoUnidad = GameObject.FinObjectOfType<Grid>().NodeFromWorldPosition(unit.transform.position);
+    //            if (Vector2.Distance(new Vector2(unit.transform.position.x, unit.transform.position.y), new Vector2(tile.transform.position.x, tile.transform.position.y)) < 1.1f)
+    //            {
+    //                Debug.Log("enemigo cerca");
+    //                enemyCloser = unit.transform.GetComponent<Unit>().gameObject;
+    //                return true;
+    //            }
+    //        }
+    //    }
+
+    //    enemyCloser = null;
+    //    return false;
+    //}
+
     private bool IsEnemyClose()
     {
         List<Tile> tiles = GetComponent<Unit>().GetTilesInRange();
         List<GameObject> unitsToPersecute = new List<GameObject>();
+        Unit[] units = FindObjectsOfType<Unit>();
 
-        int numUnits = GameObject.Find("/Units").transform.childCount;
+        int numUnits = GameObject.Find("Units").transform.childCount;
 
-        for (int i = 0; i < numUnits; i++)
-            if(GameObject.Find("/Units").transform.name.Contains("Aliado"))
-                unitsToPersecute.Add(GameObject.Find("/Units").transform.GetChild(i).gameObject);
+        foreach (Unit u in units)
+            if (u.gameObject.transform.name.Contains("Aliado"))
+                unitsToPersecute.Add(u.gameObject);
+
+        //Debug.Log("tiles " + tiles.Count);
+        //Debug.Log("unitsToPersecute " + unitsToPersecute.Count);
 
         foreach (Tile tile in tiles)
         {
@@ -121,9 +155,9 @@ public class BTCharacter : MonoBehaviour
             foreach (GameObject unit in unitsToPersecute)
             {
                 //Nodo nodoUnidad = GameObject.FinObjectOfType<Grid>().NodeFromWorldPosition(unit.transform.position);
+                //Debug.Log("Distancia:" + Vector2.Distance(new Vector2(unit.transform.position.x, unit.transform.position.y), new Vector2(tile.transform.position.x, tile.transform.position.y)));
                 if (Vector2.Distance(new Vector2(unit.transform.position.x, unit.transform.position.y), new Vector2(tile.transform.position.x, tile.transform.position.y)) < 1.1f)
                 {
-                    Debug.Log("enemigo cerca");
                     enemyCloser = unit.transform.GetComponent<Unit>().gameObject;
                     return true;
                 }
@@ -228,11 +262,25 @@ public class BTCharacter : MonoBehaviour
             {
                 Debug.Log(name + " " + "ENEMIGO CERCA");
                 //Ir a la unidad enemiga con baja vida más cercana y atacar (mapa de infuencia) (variable closerenemy)
-                nodoInicio = grid.NodeFromWorldPosition(transform.position);
-                nodoFinal = grid.NodeFromWorldPosition(enemyCloser.transform.position);
+                List<Nodo> adyacenteUnidad = grid.GetNeighbouringNodes(GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(this.transform.position));
+                bool hayAdyancente = false;
 
-                pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                foreach (Nodo adyacente in adyacenteUnidad)
+                    foreach (GameObject unidad in MapGenerator.unitsPlayer)
+                        if (unidad != null && adyacente == grid.NodeFromWorldPosition(unidad.transform.position))
+                        {
+                            hayAdyancente = true;
+                        }
+                if (!hayAdyancente)
+                {
+                    nodoInicio = grid.NodeFromWorldPosition(transform.position);
+                    nodoFinal = grid.NodeFromWorldPosition(enemyCloser.transform.position);
+
+                    pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                }
                 atacar = true;
+                hayAdyancente = false;
+
             }
             else if (percepts.Contains(Percept.VilleRangeToConquer))
             {

@@ -437,6 +437,9 @@ public class Unit : MonoBehaviour
 
             gm.ResetTiles(); // reset tiles when we die
             gm.RemoveInfoPanel(this);
+
+            MapGenerator.unitsPlayer.Remove(gameObject);
+
             Destroy(Aliade.gameObject);
         }
 
@@ -571,12 +574,18 @@ public class Unit : MonoBehaviour
         if (finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo || MapGenerator.hootchsNodes.Contains(finalPath[finalPath.Count - 1]) || finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloAliado)
             finalPath.Remove(finalPath[finalPath.Count - 1]);
 
+        //if (CheckNodeForUnits(path[path.Count-1]) && gm.playerTurn == 1)
+        //{
+        //    path.Remove(path[path.Count - 1]);
+        //    //finalPath.Remove(finalPath[finalPath.Count - 1]);
+        //}
+
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
         float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
 
         // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime*6f);
+        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime * 6f);
 
         //if (finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloEnemigo)
         //    finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
@@ -586,5 +595,21 @@ public class Unit : MonoBehaviour
             count++;
         }
 
+    }
+
+    private bool CheckNodeForUnits(Nodo nodo)
+    {
+        bool occupiedNode = false;
+
+        for (int i = 0; i < GameObject.Find("/Units").transform.childCount; i++)
+        {
+            if (GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(GameObject.Find("/Units").transform.GetChild(i).transform.position) == nodo)
+            {
+                occupiedNode = true;
+                Debug.Log(occupiedNode);
+            }
+        }
+
+        return occupiedNode;
     }
 }
