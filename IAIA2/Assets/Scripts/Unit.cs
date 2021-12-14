@@ -320,10 +320,10 @@ public class Unit : MonoBehaviour
 
         pathfinding.PathfindingPlayer(nodoInicial, nodoFinal, ref finalPath);
 
-        //hasMoved = true;
-        //ResetWeaponIcon();
-        //GetEnemies();
-        //gm.MoveInfoPanel(this);
+        hasMoved = true;
+        ResetWeaponIcon();
+        GetEnemies();
+        gm.MoveInfoPanel(this);
     }
 
     void Attack(Unit enemy) {
@@ -562,8 +562,8 @@ public class Unit : MonoBehaviour
 
         if (finalPath == null || count >= finalPath.Count)
         {
-            Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
-            nodo.IsWall = true;
+            //Nodo nodo = GameObject.Find("Map Generator").GetComponent<Grid>().NodeFromWorldPosition(transform.position);
+            //nodo.IsWall = true;
             actionDone = true;
             return;
         }
