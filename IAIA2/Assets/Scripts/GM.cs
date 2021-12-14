@@ -35,6 +35,7 @@ public class GM : MonoBehaviour
     public Village createdVillage;
 
     public List<GameObject> unitsIAonScene;
+    public List<GameObject> unitsAliadeOnScene;
 
     public GameObject blueVictory;
     public GameObject darkVictory;
@@ -51,8 +52,8 @@ public class GM : MonoBehaviour
         camAnim = Camera.main.GetComponent<Animator>();
         GetGoldIncome(1);
 
-        player1Gold = 10000;
-        player2Gold = 10000;
+        player1Gold = 100;
+        player2Gold = 100;
 
         UpdateGoldText();
 
@@ -66,6 +67,8 @@ public class GM : MonoBehaviour
             GameObject unitToAdd = GameObject.Find("/Units").transform.GetChild(i).gameObject;
             if (unitToAdd.layer == 7 && !unitsIAonScene.Contains(unitToAdd))
                 unitsIAonScene.Add(unitToAdd);
+            else if (unitToAdd.layer != 7 && !unitsAliadeOnScene.Contains(unitToAdd))
+                unitsAliadeOnScene.Add(unitToAdd);
         }
         numUnits = GameObject.Find("/Units").transform.childCount;
 

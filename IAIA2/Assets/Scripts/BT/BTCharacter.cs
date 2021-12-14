@@ -260,7 +260,7 @@ public class BTCharacter : MonoBehaviour
         {
             if (percepts.Contains(Percept.EnemyClose))
             {
-                Debug.Log(name + " " + "ENEMIGO CERCA");
+                //Debug.Log(name + " " + "ENEMIGO CERCA");
                 //Ir a la unidad enemiga con baja vida más cercana y atacar (mapa de infuencia) (variable closerenemy)
                 List<Nodo> adyacenteUnidad = grid.GetNeighbouringNodes(GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(this.transform.position));
                 bool hayAdyancente = false;
@@ -276,7 +276,24 @@ public class BTCharacter : MonoBehaviour
                     nodoInicio = grid.NodeFromWorldPosition(transform.position);
                     nodoFinal = grid.NodeFromWorldPosition(enemyCloser.transform.position);
 
-                    pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+
+                    if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1f)
+                        pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
+                    else
+                    {
+                        GetComponent<Unit>().finalPath = null;
+                        GetComponent<Unit>().actionDone = true;
+                    }
+
+                    //int num = 0;
+                    //List<Nodo> newPath = new List<Nodo>();
+                    //if (GetComponent<Unit>().finalPath != null)
+                    //    while (num < GetComponent<Unit>().finalPath.Count - 1)
+                    //    {
+                    //        newPath.Add(GetComponent<Unit>().finalPath[num]);
+                    //        num++;
+                    //    }
+                    //GetComponent<Unit>().finalPath = newPath;
                 }
                 atacar = true;
                 hayAdyancente = false;
@@ -284,7 +301,7 @@ public class BTCharacter : MonoBehaviour
             }
             else if (percepts.Contains(Percept.VilleRangeToConquer))
             {
-                Debug.Log(name + " " + "CONQUISTA");
+                //Debug.Log(name + " " + "CONQUISTA");
                 //Ir a villa en rango no conquistada (hootchCloser) y conquistarla
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
                 Debug.Log(hootchCloser);
@@ -306,7 +323,7 @@ public class BTCharacter : MonoBehaviour
             }
             else //No hay villa ni enemigo cercano
             {
-                Debug.Log(name + " " + "AVANZA CASTILLO");
+                //Debug.Log(name + " " + "AVANZA CASTILLO");
                 //Avanza sin mas si NO es un tanque
                 nodoInicio = grid.NodeFromWorldPosition(transform.position);
 
@@ -317,10 +334,10 @@ public class BTCharacter : MonoBehaviour
                 //nodoInicio.IsWall = false;
                 //nodoInicio.tile.GetComponent<Tile>().unitInTile = null;
                 //pathfinding.Pathfinding(nodoInicio, nodoFinal, ref GetComponent<Unit>().finalPath);
-                Debug.Log("HOLAx2");
+                //Debug.Log("HOLAx2");
                 if (!this.name.Contains("Tanque"))
                 {
-                    Debug.Log("HOLA");
+                    //Debug.Log("HOLA");
                     nodoFinal = MapGenerator.nodoCastilloAliado;
 
                     if (Vector3.Distance(nodoInicio.position, nodoFinal.position) > 1)
@@ -364,7 +381,7 @@ public class BTCharacter : MonoBehaviour
         }
         else if (ActualMode == Mode.Defensa)
         {
-            Debug.Log("MODO DEFENSA");
+            //Debug.Log("MODO DEFENSA");
             nodoInicio = grid.NodeFromWorldPosition(transform.position);
             nodoFinal = MapGenerator.nodoCastilloEnemigo;
 

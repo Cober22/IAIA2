@@ -56,7 +56,7 @@ public class Unit : MonoBehaviour
     private int maxSteps;
 
     public bool actionDone;
-
+    public GameObject unitNextToDestroy;
 
     [HideInInspector]
     public Vector3 position;
@@ -439,12 +439,13 @@ public class Unit : MonoBehaviour
             gm.RemoveInfoPanel(this);
 
             MapGenerator.unitsPlayer.Remove(gameObject);
-
+            unitNextToDestroy = Aliade.gameObject;
             Destroy(Aliade.gameObject);
         }
 
         gm.UpdateInfoStats();
         ResetWeaponIcon();
+        actionDone = true;
     }
 
     public void AttackAliade(Unit enemy)
@@ -506,6 +507,7 @@ public class Unit : MonoBehaviour
             gm.RemoveInfoPanel(this);
 
             MapGenerator.unitsEnemy.Remove(gameObject);
+
             gm.unitsIAonScene.Remove(gameObject);
 
             Destroy(gameObject);
@@ -574,27 +576,42 @@ public class Unit : MonoBehaviour
         if (finalPath[finalPath.Count-1] == MapGenerator.nodoCastilloEnemigo || MapGenerator.hootchsNodes.Contains(finalPath[finalPath.Count - 1]) || finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloAliado)
             finalPath.Remove(finalPath[finalPath.Count - 1]);
 
+        //int num = 0;
+        //while(gm.unitsAliadeOnScene != null && num < gm.unitsAliadeOnScene.Count && unitNextToDestroy !=null && gm.unitsAliadeOnScene.Contains(unitNextToDestroy)) 
+        //{
+        //    Nodo nodoUnit = GameObject.FindObjectOfType<Grid>().NodeFromWorldPosition(gm.unitsAliadeOnScene[num].transform.position);
+        //    if (finalPath != null && finalPath[finalPath.Count - 1] == nodoUnit)
+        //    {
+        //        finalPath.Remove(finalPath[finalPath.Count - 1]);
+        //        Destroy(unitNextToDestroy);
+        //        break;
+        //    }
+        //    num++;
+        //}
+
+
         //if (CheckNodeForUnits(path[path.Count-1]) && gm.playerTurn == 1)
         //{
         //    path.Remove(path[path.Count - 1]);
         //    //finalPath.Remove(finalPath[finalPath.Count - 1]);
         //}
 
+        //if(finalPath != null && count < finalPath.Count)
+        //{
+            // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
+            float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
 
-        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        float distanceToNextNode = Vector3.Distance(transform.position, path[count].position);
+            // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
+            transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime * 4f);
 
-        // El NPC recorrera todos los nodos hasta su penúltimo, para no quedarse sin nodos que perseguir y evitar posibles errores
-        transform.position = Vector3.MoveTowards(transform.position, path[count].position, Time.deltaTime * 6f);
-
-        //if (finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloEnemigo)
-        //    finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
-        if (distanceToNextNode < 0.01f && count < finalPath.Count)
-        {
-            stepsTaken++;
-            count++;
-        }
-
+            //if (finalPath[finalPath.Count - 1] == MapGenerator.nodoCastilloEnemigo)
+            //    finalPath.Remove(MapGenerator.nodoCastilloEnemigo);
+            if (distanceToNextNode < 0.01f && count < finalPath.Count)
+            {
+                stepsTaken++;
+                count++;
+            }
+        //}
     }
 
     private bool CheckNodeForUnits(Nodo nodo)

@@ -136,6 +136,7 @@ public class Tile : MonoBehaviour
         else if (isCreatable == true && gm.createdUnit != null)
         {
             Unit unit = Instantiate(gm.createdUnit, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+            unit.gameObject.transform.SetParent(GameObject.Find("/Units").transform);
             unit.hasMoved = true;
             unit.hasAttacked = true;
             gm.ResetTiles();
