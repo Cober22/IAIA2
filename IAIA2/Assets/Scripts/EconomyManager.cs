@@ -15,6 +15,8 @@ public class EconomyManager : MonoBehaviour
         {
             PurchasePhase();
         }
+
+        
     }
 
     public static void GiveMoneyForUnit(Unit unit) //dada la unidad a la que ha matado
@@ -249,5 +251,30 @@ public class EconomyManager : MonoBehaviour
         }
 
         return canSpawn;
+    }
+
+    public bool CheckNodeForUnits(Nodo nodoCastillo)
+    {
+        bool occupiedNode = false;
+
+        List<Nodo> vecinos;
+
+        vecinos = GameObject.Find("Map Generator").GetComponent<Grid>().GetAllNeighbouringNodes(nodoCastillo);
+
+        foreach (Nodo nodo in vecinos)
+        {
+            for (int i = 0; i < GameObject.Find("/Units").transform.childCount; i++)
+            {
+                if (grid.NodeFromWorldPosition(GameObject.Find("/Units").transform.GetChild(i).transform.position) == nodo)
+                {
+                    occupiedNode = true;
+                    Debug.Log(occupiedNode);
+                }
+            }
+        }
+
+        return occupiedNode;
+
+
     }
 }

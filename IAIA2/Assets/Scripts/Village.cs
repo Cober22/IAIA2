@@ -45,7 +45,7 @@ public class Village : MonoBehaviour
                 //Debug.Log(grid.NodeFromWorldPosition(unit.position) == vecino);
                 if (grid.NodeFromWorldPosition(unit.position) == vecino)
                 {
-                    if (unit.gameObject.layer == 7 && unit.gameObject.GetComponent<BTCharacter>().conquistarVilla)
+                    if (unit.gameObject.layer == 7 && unit.gameObject.GetComponent<BTCharacter>().conquistarVilla && GameObject.FindObjectOfType<GM>().playerTurn == 1)
                     {
                         conqueredByIA = true;
                         conqueredByPlayer = false;
